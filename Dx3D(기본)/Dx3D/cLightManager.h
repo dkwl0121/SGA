@@ -4,17 +4,15 @@
 
 class cLightManager
 {
+    SINGLETON(cLightManager);
+
 private:
 	map<string, int>			m_mapLightIndex;
 	vector<D3DLIGHT9>			m_vecLight;
 
 public:
 
-	static cLightManager* GetInstance()
-	{
-		static cLightManager instance;
-		return &instance;
-	}
+    void Destroy();
 
 	// Ãß°¡
 	void AddLight(string str, D3DLIGHT9 light);

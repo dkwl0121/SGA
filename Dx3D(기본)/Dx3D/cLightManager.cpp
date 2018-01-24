@@ -1,6 +1,24 @@
 #include "stdafx.h"
 #include "cLightManager.h"
 
+cLightManager::cLightManager()
+{
+}
+
+cLightManager::~cLightManager()
+{
+}
+
+void cLightManager::Destroy()
+{
+    //vector<D3DLIGHT9>::iterator iter;
+
+    //for (iter = m_vecLight.begin(); iter != m_vecLight.end(); ++iter)
+    //    SAFE_RELEASE(*iter);
+
+    m_vecLight.clear();
+}
+
 void cLightManager::AddLight(string str, D3DLIGHT9 light)
 {
 	if (m_mapLightIndex[str] == NULL) // 스트링있는지 확인 (없으면 할당이 됨)

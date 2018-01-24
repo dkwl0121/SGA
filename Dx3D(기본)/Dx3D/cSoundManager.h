@@ -15,6 +15,8 @@ using namespace FMOD;						// FMOD 네임스페이스
 
 class cSoundManager
 {
+    SINGLETON(cSoundManager);
+
 private:
 	typedef map<string, Sound**> arrSounds;
 	typedef map<string, Sound**>::iterator arrSoundIter;
@@ -27,14 +29,6 @@ private:
 	arrSounds	m_mTotalSounds;	// 전체 사운드 목록
 
 public:
-	static cSoundManager* GetInstance()
-	{
-		static cSoundManager instance;
-		return &instance;
-	}
-
-	cSoundManager();
-	~cSoundManager();
 
 	void Update();
 	void AddSound(string key, string fileName, bool bgm = false, bool loop = false);

@@ -10,14 +10,7 @@ private:
 	LPDIRECT3DDEVICE9		m_pD3DDevice;	// 장치로 부터 D3D9 인터페이스를 만드는데 사용 된다.
 
 public:
-	cDeviceManager();
-	~cDeviceManager();
-
-	static cDeviceManager* GetInstance()
-	{
-		static cDeviceManager instance;
-		return &instance;
-	}
+    SINGLETON(cDeviceManager);
 
 	void Destroy();
 

@@ -4,19 +4,13 @@
 
 class cTimeManager
 {
+    SINGLETON(cTimeManager);
+
 private:
 	DWORD m_dwLastUpdatedTime;
 	DWORD m_dwDeltaTime;
 
 public:
-	cTimeManager();
-	~cTimeManager();
-
-	static cTimeManager* GetInstance()
-	{
-		static cTimeManager instance;
-		return &instance;
-	}
 
 	void Update();
 

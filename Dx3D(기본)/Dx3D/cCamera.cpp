@@ -3,7 +3,7 @@
 
 
 cCamera::cCamera()
-	: m_fDistance(50)
+	: m_fDistance(10)
 	, m_vEye(0, LOOKAT_POS, -m_fDistance)
 	, m_vLookAt(0, LOOKAT_POS, 0)
 	, m_vUp(0, 1, 0)
@@ -64,7 +64,7 @@ void cCamera::Update(D3DXVECTOR3* pTarget/* = NULL*/)
 	}
 	if (g_nWheelDelta != 0)
 	{
-		m_fDistance -= g_nWheelDelta * 0.001f;
+		m_fDistance -= g_nWheelDelta * 0.01f;
 		g_nWheelDelta = 0;
 	}
 

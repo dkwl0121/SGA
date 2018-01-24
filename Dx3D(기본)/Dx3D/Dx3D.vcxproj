@@ -145,36 +145,51 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="cAutoReleasePool.h" />
     <ClInclude Include="cCamera.h" />
     <ClInclude Include="cCharacterController.h" />
     <ClInclude Include="cCube.h" />
     <ClInclude Include="cCubeMan.h" />
     <ClInclude Include="cDeviceManager.h" />
     <ClInclude Include="cGrid.h" />
+    <ClInclude Include="cGroup.h" />
     <ClInclude Include="cKeyManager.h" />
     <ClInclude Include="cLightManager.h" />
     <ClInclude Include="cMainGame.h" />
+    <ClInclude Include="cMtlTex.h" />
+    <ClInclude Include="cObject.h" />
+    <ClInclude Include="cObjectManager.h" />
+    <ClInclude Include="cObjLoader.h" />
+    <ClInclude Include="cObjMap.h" />
     <ClInclude Include="cPyramid.h" />
     <ClInclude Include="cSoundManager.h" />
     <ClInclude Include="cTextureManager.h" />
     <ClInclude Include="cTimeManager.h" />
     <ClInclude Include="D3DUtility.h" />
     <ClInclude Include="Dx3D.h" />
+    <ClInclude Include="iMap.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cAutoReleasePool.cpp" />
     <ClCompile Include="cCamera.cpp" />
     <ClCompile Include="cCharacterController.cpp" />
     <ClCompile Include="cCube.cpp" />
     <ClCompile Include="cCubeMan.cpp" />
     <ClCompile Include="cDeviceManager.cpp" />
     <ClCompile Include="cGrid.cpp" />
+    <ClCompile Include="cGroup.cpp" />
     <ClCompile Include="cKeyManager.cpp" />
     <ClCompile Include="cLightManager.cpp" />
     <ClCompile Include="cMainGame.cpp" />
+    <ClCompile Include="cMtlTex.cpp" />
+    <ClCompile Include="cObject.cpp" />
+    <ClCompile Include="cObjectManager.cpp" />
+    <ClCompile Include="cObjLoader.cpp" />
+    <ClCompile Include="cObjMap.cpp" />
     <ClCompile Include="cPyramid.cpp" />
     <ClCompile Include="cSoundManager.cpp" />
     <ClCompile Include="cTextureManager.cpp" />

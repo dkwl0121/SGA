@@ -1,5 +1,7 @@
 #pragma once
 
+class iMap;
+
 #define JUMP_POWER		1.5f
 #define JUMP_CNT_MAX	2
 
@@ -21,7 +23,7 @@ public:
 	cCharacterController();
 	~cCharacterController();
 
-	void Update(bool IsControl);
+	void Update(bool IsControl, iMap* pMap = NULL);
 	
 	// ╟ыем
 	D3DXVECTOR3* GetPosition() { return &m_vPosition; }

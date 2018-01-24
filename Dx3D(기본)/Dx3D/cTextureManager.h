@@ -4,18 +4,12 @@
 
 class cTextureManager
 {
+    SINGLETON(cTextureManager);
+
 private:
 	map<string, LPDIRECT3DTEXTURE9> m_mapTexture;
 
 public:
-	cTextureManager();
-	~cTextureManager();
-
-	static cTextureManager* GetInstance()
-	{
-		static cTextureManager instance;
-		return &instance;
-	}
 
 	void Destroy();
 
