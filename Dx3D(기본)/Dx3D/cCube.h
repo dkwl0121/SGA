@@ -1,17 +1,21 @@
 #pragma once
 
+#include "cObject.h"
+
 #define BLANK_DISTANCE 1.0f
 
-class cCube
+class cCube : public cObject
 {
 private:
 	D3DXMATRIXA16			m_matWorld;
 	LPDIRECT3DTEXTURE9		m_pTexture;
 	D3DMATERIAL9			m_stMaterial;
 
-	vector<ST_PN_VERTEX>	m_vecPNVertex;
-	vector<ST_PNT_VERTEX>	m_vecPNTVertex;
 	vector<cCube*>			m_vecChild;
+
+    /* 버텍스/인덱스 버퍼 */
+    IDirect3DVertexBuffer9*	m_vb;
+    IDirect3DIndexBuffer9*	m_ib;
 
 	D3DXVECTOR3				m_vLocalPos;
 	float					m_fRotX;
@@ -23,8 +27,7 @@ private:
 	D3DXVECTOR3				m_vCenter;		// 월드 공간에서의 포지션 정보
 
 	void SetPNVertex(vector<D3DXVECTOR3>& vecV, vector<int>& vecI);
-	void SetPNTVertex(vector<D3DXVECTOR3>& vecV, vector<int>& vecI,
-		vector<D3DXVECTOR2>* vecT);
+	void SetPNTVertex(vector<D3DXVECTOR3>& vecV, vector<int>& vecI, vector<D3DXVECTOR2>* vecT);
 
 public:
 	cCube();
@@ -34,7 +37,6 @@ public:
 	void Update(D3DXMATRIXA16* pParent = NULL);
 	void Render();
 	void AddChild(cCube* pCube);
-	void Release();
 
 	void SetLocalPos(D3DXVECTOR3 v) { m_vLocalPos = v; }
 	void SetRotSpeedX(float speed) { m_fRotXSpeed = speed; }

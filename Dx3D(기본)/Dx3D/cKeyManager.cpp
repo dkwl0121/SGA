@@ -1,6 +1,15 @@
 #include "stdafx.h"
 #include "cKeyManager.h"
 
+cKeyManager::cKeyManager()
+{
+}
+
+
+cKeyManager::~cKeyManager()
+{
+}
+
 void cKeyManager::Setup()
 {
 	for (int i = 0; i < KEYMAX; ++i)

@@ -26,9 +26,6 @@ cMainGame::~cMainGame()
 	SAFE_DELETE(m_pGrid);
 	SAFE_DELETE(m_pCubeMan);
 
-    for each (auto p in m_vecGroup)
-        p->Release();
-
     g_pLightManager->Destroy();
 	g_pTextureManager->Destroy();
 
@@ -69,6 +66,7 @@ void cMainGame::Setup()
 	m_pGrid->Setup();
 
 	m_pCubeMan = new cCubeMan;
+    g_pAutoReleasePool->AddObject(m_pCubeMan);
 	m_pCubeMan->Setup();
 	m_pCubeMan->SetController(m_pController);
 

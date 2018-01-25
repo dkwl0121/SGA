@@ -1,5 +1,7 @@
 #pragma once
 
+#include "cObject.h"
+
 class cCube;
 class cCharacterController;
 
@@ -22,7 +24,7 @@ enum E_CUBEMAN_PARTS_TYPE
 	E_CUBEMAN_PARTS_TYPE_WEAPON		// 
 };
 
-class cCubeMan
+class cCubeMan : public cObject
 {
 private:
 	cCube*					m_pRootCube;	// 큐브 오브젝트 클래스

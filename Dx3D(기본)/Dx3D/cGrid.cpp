@@ -50,6 +50,7 @@ void cGrid::Setup()
 	D3DXMatrixIdentity(&matR);
 	matW = matS * matR;
 	pyramid = new cPyramid;
+    g_pAutoReleasePool->AddObject(pyramid);
 	pyramid->Setup(c, matW);
 	m_vecPyramid.push_back(pyramid);
 
@@ -60,6 +61,7 @@ void cGrid::Setup()
 	D3DXMatrixRotationZ(&matR, D3DX_PI / 2);
 	matW = matS * matR;
 	pyramid = new cPyramid;
+    g_pAutoReleasePool->AddObject(pyramid);
 	pyramid->Setup(c, matW);
 	m_vecPyramid.push_back(pyramid);
 
@@ -70,6 +72,7 @@ void cGrid::Setup()
 	D3DXMatrixRotationY(&matR, -D3DX_PI / 2);
 	matW = matS * matR;
 	pyramid = new cPyramid;
+    g_pAutoReleasePool->AddObject(pyramid);
 	pyramid->Setup(c, matW);
 	m_vecPyramid.push_back(pyramid);
 }

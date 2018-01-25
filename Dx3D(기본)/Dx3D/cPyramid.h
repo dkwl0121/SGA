@@ -1,5 +1,8 @@
 #pragma once
-class cPyramid
+
+#include "cObject.h"
+
+class cPyramid : public cObject
 {
 private:
 	D3DXMATRIXA16			m_matWorld;

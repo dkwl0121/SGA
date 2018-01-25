@@ -1,7 +1,7 @@
 #pragma once
 #include <bitset>
 
-using namespace std;
+//using namespace std;
 
 #define KEYMAX 256
 
@@ -9,17 +9,19 @@ using namespace std;
 
 class cKeyManager
 {
+      SINGLETON(cKeyManager);
+
 private:
 	bitset<KEYMAX> m_bitKeyUp;
 	bitset<KEYMAX> m_bitKeyDown;
 
 public:
 
-	static cKeyManager* GetInstance()
-	{
-		static cKeyManager instance;
-		return &instance;
-	}
+	//static cKeyManager* GetInstance()
+	//{
+	//	static cKeyManager instance;
+	//	return &instance;
+	//}
 
 	// 키 매니져 초기화
 	void Setup();

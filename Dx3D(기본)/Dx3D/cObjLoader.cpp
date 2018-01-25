@@ -90,8 +90,29 @@ void cObjLoader::Load(IN char* szFilePath, IN D3DXMATRIXA16* pMat, OUT vector<cG
 			if (vecPNTVertex.empty()) continue;
 
 			cGroup* pGroup = new cGroup;
-			pGroup->SetPNTVertex(vecPNTVertex);
-			pGroup->SetMtlTex(m_mapMtlTex[sMtlName]);
+            g_pAutoReleasePool->AddObject(pGroup);
+            // 마테리얼 설정
+            pGroup->SetMtlTex(m_mapMtlTex[sMtlName]);
+      
+            // 버텍스 버퍼 설정
+            ST_PNT_VERTEX*		pPNTVertex;
+
+            // 버텍스 버퍼 생성
+            g_pD3DDevice->CreateVertexBuffer(vecPNTVertex.size() * sizeof(ST_PNT_VERTEX), NULL,
+                ST_PNT_VERTEX::FVF, D3DPOOL_MANAGED, &pGroup->GetVertexBuffer(), NULL);
+
+            // 버퍼 접근 시 락 설정!
+            pGroup->GetVertexBuffer()->Lock(NULL, NULL, (LPVOID*)&pPNTVertex, NULL);
+
+            
+            for (int i = 0; i < vecPNTVertex.size(); ++i)
+            {
+                pPNTVertex[i] = vecPNTVertex[i];
+            }
+
+            pGroup->GetVertexBuffer()->Unlock(); // 언락!!
+
+
 			vecGroup.push_back(pGroup);
 			vecPNTVertex.clear();
 		}

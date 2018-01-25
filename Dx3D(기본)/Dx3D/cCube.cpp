@@ -11,6 +11,8 @@ cCube::cCube()
 	, m_isMoving(false)
 	, m_vCenter(0, 0, 0)
 	, m_pTexture(NULL)
+    , m_vb(NULL)
+    , m_ib(NULL)
 {
 	D3DXMatrixIdentity(&m_matWorld);
 }
@@ -18,6 +20,8 @@ cCube::cCube()
 
 cCube::~cCube()
 {
+    SAFE_RELEASE(m_vb);
+    SAFE_RELEASE(m_ib);
 }
 
 void cCube::Setup(vector<D3DXVECTOR2>* vecT, string key, D3DMATERIAL9 material, D3DXMATRIXA16* pMat/*= NULL*/)
@@ -37,7 +41,7 @@ void cCube::Setup(vector<D3DXVECTOR2>* vecT, string key, D3DMATERIAL9 material, 
 		for (int i = 0; i < vecVertex.size(); ++i)
 			D3DXVec3TransformCoord(&vecVertex[i], &vecVertex[i], pMat);
 
-		D3DXVec3TransformCoord(&m_vCenter, &m_vCenter, &m_matWorld);/////////////////////////////////////////////////////////////////////////
+		D3DXVec3TransformCoord(&m_vCenter, &m_vCenter, &m_matWorld);///////////////////////////////////////
 	}
 
 	vector<int>	vecIndex;
@@ -97,37 +101,76 @@ void cCube::Setup(vector<D3DXVECTOR2>* vecT, string key, D3DMATERIAL9 material, 
 
 void cCube::SetPNVertex(vector<D3DXVECTOR3>& vecV, vector<int>& vecI)
 {
-	D3DXVECTOR3 n;
+    ST_PN_VERTEX*		pPNVertex;
+    WORD*				pIndex;
 
-	for (int i = 0; i < vecI.size(); i += 6)
-	{
-		ComputeNormal(&n, &vecV[vecI[i + 0]], &vecV[vecI[i + 1]], &vecV[vecI[i + 2]]);
+    // 버텍스 버퍼 생성
+    g_pD3DDevice->CreateVertexBuffer(24 * sizeof(ST_PN_VERTEX), NULL,
+        ST_PN_VERTEX::FVF, D3DPOOL_MANAGED, &m_vb, NULL);
+    // 인덱스 버퍼 생성
+    g_pD3DDevice->CreateIndexBuffer(36 * sizeof(WORD), NULL,
+        D3DFMT_INDEX16, D3DPOOL_DEFAULT, &m_ib, NULL);
 
-		m_vecPNVertex.push_back(ST_PN_VERTEX(vecV[vecI[i + 0]], n));
-		m_vecPNVertex.push_back(ST_PN_VERTEX(vecV[vecI[i + 1]], n));
-		m_vecPNVertex.push_back(ST_PN_VERTEX(vecV[vecI[i + 2]], n));
-		m_vecPNVertex.push_back(ST_PN_VERTEX(vecV[vecI[i + 3]], n));
-		m_vecPNVertex.push_back(ST_PN_VERTEX(vecV[vecI[i + 4]], n));
-		m_vecPNVertex.push_back(ST_PN_VERTEX(vecV[vecI[i + 5]], n));
-	}
+    // 버퍼 접근 시 락 설정!
+    m_vb->Lock(NULL, NULL, (LPVOID*)&pPNVertex, NULL);
+
+    D3DXVECTOR3 n; // 노말값
+    int index = 0;
+    for (int i = 0; i < vecI.size(); i += 6)
+    {
+        ComputeNormal(&n, &vecV[vecI[i + 0]], &vecV[vecI[i + 1]], &vecV[vecI[i + 2]]);
+
+        pPNVertex[index++] = ST_PN_VERTEX(vecV[vecI[i + 0]], n);
+        pPNVertex[index++] = ST_PN_VERTEX(vecV[vecI[i + 1]], n);
+        pPNVertex[index++] = ST_PN_VERTEX(vecV[vecI[i + 2]], n);
+        pPNVertex[index++] = ST_PN_VERTEX(vecV[vecI[i + 5]], n);
+    }
+
+    m_vb->Unlock(); // 언락!!
+
+    // 인덱스 버퍼 접근시 락 설정!
+    m_ib->Lock(NULL, NULL, (LPVOID*)&pIndex, NULL);
+
+    index = 0;
+    for (int i = 0; i < 36; i += 6)
+    {
+        pIndex[i + 0] = index + 0;
+        pIndex[i + 1] = index + 1;
+        pIndex[i + 2] = index + 2;
+        pIndex[i + 3] = index + 0;
+        pIndex[i + 4] = index + 2;
+        pIndex[i + 5] = index + 3;
+        index += 4;
+    }
+
+    m_ib->Unlock(); // 언락!!
 }
 
-void cCube::SetPNTVertex(vector<D3DXVECTOR3>& vecV, vector<int>& vecI,
-	vector<D3DXVECTOR2>* vecT)
+void cCube::SetPNTVertex(vector<D3DXVECTOR3>& vecV, vector<int>& vecI, vector<D3DXVECTOR2>* vecT)
 {
-	D3DXVECTOR3 n;
+    ST_PNT_VERTEX*		pPNTVertex;
 
-	for (int i = 0; i < vecI.size(); i += 6)
-	{
-		ComputeNormal(&n, &vecV[vecI[i + 0]], &vecV[vecI[i + 1]], &vecV[vecI[i + 2]]);
+    // 버텍스 버퍼 생성
+    g_pD3DDevice->CreateVertexBuffer(36 * sizeof(ST_PNT_VERTEX), NULL,
+        ST_PNT_VERTEX::FVF, D3DPOOL_MANAGED, &m_vb, NULL);
 
-		m_vecPNTVertex.push_back(ST_PNT_VERTEX(vecV[vecI[i + 0]], n, (*vecT)[(i + 0) % (*vecT).size()]));
-		m_vecPNTVertex.push_back(ST_PNT_VERTEX(vecV[vecI[i + 1]], n, (*vecT)[(i + 1) % (*vecT).size()]));
-		m_vecPNTVertex.push_back(ST_PNT_VERTEX(vecV[vecI[i + 2]], n, (*vecT)[(i + 2) % (*vecT).size()]));
-		m_vecPNTVertex.push_back(ST_PNT_VERTEX(vecV[vecI[i + 3]], n, (*vecT)[(i + 3) % (*vecT).size()]));
-		m_vecPNTVertex.push_back(ST_PNT_VERTEX(vecV[vecI[i + 4]], n, (*vecT)[(i + 4) % (*vecT).size()]));
-		m_vecPNTVertex.push_back(ST_PNT_VERTEX(vecV[vecI[i + 5]], n, (*vecT)[(i + 5) % (*vecT).size()]));
-	}
+    // 버퍼 접근 시 락 설정!
+    m_vb->Lock(NULL, NULL, (LPVOID*)&pPNTVertex, NULL);
+
+    D3DXVECTOR3 n; // 노말값
+    for (int i = 0; i < vecI.size(); i += 6)
+    {
+        ComputeNormal(&n, &vecV[vecI[i + 0]], &vecV[vecI[i + 1]], &vecV[vecI[i + 2]]);
+
+        pPNTVertex[i + 0] = ST_PNT_VERTEX(vecV[vecI[i + 0]], n, (*vecT)[(i + 0) % (*vecT).size()]);
+        pPNTVertex[i + 1] = ST_PNT_VERTEX(vecV[vecI[i + 1]], n, (*vecT)[(i + 1) % (*vecT).size()]);
+        pPNTVertex[i + 2] = ST_PNT_VERTEX(vecV[vecI[i + 2]], n, (*vecT)[(i + 2) % (*vecT).size()]);
+        pPNTVertex[i + 3] = ST_PNT_VERTEX(vecV[vecI[i + 3]], n, (*vecT)[(i + 3) % (*vecT).size()]);
+        pPNTVertex[i + 4] = ST_PNT_VERTEX(vecV[vecI[i + 4]], n, (*vecT)[(i + 4) % (*vecT).size()]);
+        pPNTVertex[i + 5] = ST_PNT_VERTEX(vecV[vecI[i + 5]], n, (*vecT)[(i + 5) % (*vecT).size()]);
+    }
+
+    m_vb->Unlock(); // 언락!!
 }
 
 void cCube::Update(D3DXMATRIXA16* pParent/*= NULL*/)
@@ -181,17 +224,31 @@ void cCube::Render()
 	g_pD3DDevice->SetTexture(0, m_pTexture);
 	g_pD3DDevice->SetMaterial(&m_stMaterial);
 
-	if (!m_vecPNVertex.empty())
+	if (m_ib && m_vb)
 	{
+        D3DVERTEXBUFFER_DESC vbDesc;
+        m_vb->GetDesc(&vbDesc);
+        D3DINDEXBUFFER_DESC ibDesc;
+        m_ib->GetDesc(&ibDesc);
+
 		g_pD3DDevice->SetFVF(ST_PN_VERTEX::FVF);
-		g_pD3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, m_vecPNVertex.size() / 3,
-			&m_vecPNVertex[0], sizeof(ST_PN_VERTEX));
+        g_pD3DDevice->SetStreamSource(0, m_vb, 0, sizeof(ST_PN_VERTEX));
+        g_pD3DDevice->SetIndices(m_ib);
+        g_pD3DDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0,
+            vbDesc.Size, 0, ibDesc.Size / 3);
+		//g_pD3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, m_vecPNVertex.size() / 3,
+		//	&m_vecPNVertex[0], sizeof(ST_PN_VERTEX));
 	}
-	else if (!m_vecPNTVertex.empty())
+	else if (m_vb)
 	{
+        D3DVERTEXBUFFER_DESC vbDesc;
+        m_vb->GetDesc(&vbDesc);
+
 		g_pD3DDevice->SetFVF(ST_PNT_VERTEX::FVF);
-		g_pD3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, m_vecPNTVertex.size() / 3,
-			&m_vecPNTVertex[0], sizeof(ST_PNT_VERTEX));
+        g_pD3DDevice->SetStreamSource(0, m_vb, 0, sizeof(ST_PNT_VERTEX));
+        g_pD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, vbDesc.Size / 3);
+		//g_pD3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, m_vecPNTVertex.size() / 3,
+		//	&m_vecPNTVertex[0], sizeof(ST_PNT_VERTEX));
 	}
 
 	for (int i = 0; i < m_vecChild.size(); ++i)
@@ -201,14 +258,6 @@ void cCube::Render()
 void cCube::AddChild(cCube* pCube)
 {
 	m_vecChild.push_back(pCube);
-}
-
-void cCube::Release()
-{
-	for (int i = 0; i < m_vecChild.size(); ++i)
-		m_vecChild[i]->Release();
-
-	delete this;
 }
 
 void cCube::SetIsMoving(bool move)

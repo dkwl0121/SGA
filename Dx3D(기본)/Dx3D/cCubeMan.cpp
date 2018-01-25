@@ -43,6 +43,7 @@ void cCubeMan::Setup()
 	D3DXMatrixTranslation(&matT, 0.0f, 3.0f, 0.0f);
 	matSRT = matS * matT;
 	m_pRootCube = new cCube;
+    g_pAutoReleasePool->AddObject(m_pRootCube);
 	m_pRootCube->Setup(&vecT, "batman", WHITE_MTRL, &matSRT);
 	vecT.clear();
 
@@ -61,6 +62,7 @@ void cCubeMan::Setup()
 	D3DXMatrixTranslation(&matT, 0.0f, 4.8f, 0.0f);
 	matSRT = matS * matT;
 	pCube = new cCube;
+    g_pAutoReleasePool->AddObject(pCube);
 	pCube->Setup(&vecT, "batman", WHITE_MTRL, &matSRT);
 	vecT.clear();
 	pCube->SetRotSpeedY(0.05f);
@@ -81,6 +83,7 @@ void cCubeMan::Setup()
 	D3DXMatrixTranslation(&matT, -1.5f, 3.0f, 0.0f);
 	matSRT = matS * matR * matT;
 	pCube = new cCube;
+    g_pAutoReleasePool->AddObject(pCube);
 	pCube->Setup(&vecT, "batman", WHITE_MTRL, &matSRT);
 	pCube->SetRotSpeedX(0.05f);
 	pCube->SetLocalPos(D3DXVECTOR3(0.0f, -4.0f, 0.0f));
@@ -91,6 +94,7 @@ void cCubeMan::Setup()
 	D3DXMatrixTranslation(&matT, 1.5f, 3.0f, 0.0f);
 	matSRT = matS * matT;
 	pCube = new cCube;
+    g_pAutoReleasePool->AddObject(pCube);
 	pCube->Setup(&vecT, "batman", WHITE_MTRL, &matSRT);
 	vecT.clear();
 	pCube->SetRotSpeedX(-0.05f);
@@ -102,6 +106,7 @@ void cCubeMan::Setup()
 	D3DXMatrixTranslation(&matT, 1.5f, 2.0f, 1.0f);
 	matSRT = matS * matT;
 	cCube* pWeapon = new cCube;
+    g_pAutoReleasePool->AddObject(pWeapon);
 	pWeapon->Setup(NULL, "null", WHITE_MTRL, &matSRT);
 	pCube->AddChild(pWeapon);
 
@@ -118,6 +123,7 @@ void cCubeMan::Setup()
 	D3DXMatrixTranslation(&matT, -0.5f, 1.0f, 0.0f);
 	matSRT = matS * matT;
 	pCube = new cCube;
+    g_pAutoReleasePool->AddObject(pCube);
 	pCube->Setup(&vecT, "batman", WHITE_MTRL, &matSRT);
 	pCube->SetRotSpeedX(-0.05f);
 	pCube->SetLocalPos(D3DXVECTOR3(0.0f, -2.0f, 0.0f));
@@ -128,6 +134,7 @@ void cCubeMan::Setup()
 	D3DXMatrixTranslation(&matT, 0.5f, 1.0f, 0.0f);
 	matSRT = matS * matT;
 	pCube = new cCube;
+    g_pAutoReleasePool->AddObject(pCube);
 	pCube->Setup(&vecT, "batman", WHITE_MTRL, &matSRT);
 	vecT.clear();
 	pCube->SetRotSpeedX(0.05f);
