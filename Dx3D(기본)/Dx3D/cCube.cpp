@@ -41,7 +41,7 @@ void cCube::Setup(vector<D3DXVECTOR2>* vecT, string key, D3DMATERIAL9 material, 
 		for (int i = 0; i < vecVertex.size(); ++i)
 			D3DXVec3TransformCoord(&vecVertex[i], &vecVertex[i], pMat);
 
-		D3DXVec3TransformCoord(&m_vCenter, &m_vCenter, &m_matWorld);///////////////////////////////////////
+		//D3DXVECTOR3(pMat->_41, pMat->_42, pMat->_43);
 	}
 
 	vector<int>	vecIndex;

@@ -151,6 +151,7 @@
     <ClInclude Include="cCube.h" />
     <ClInclude Include="cCubeMan.h" />
     <ClInclude Include="cDeviceManager.h" />
+    <ClInclude Include="cDrawTextManager.h" />
     <ClInclude Include="cGrid.h" />
     <ClInclude Include="cGroup.h" />
     <ClInclude Include="cKeyManager.h" />
@@ -180,6 +181,7 @@
     <ClCompile Include="cCube.cpp" />
     <ClCompile Include="cCubeMan.cpp" />
     <ClCompile Include="cDeviceManager.cpp" />
+    <ClCompile Include="cDrawTextManager.cpp" />
     <ClCompile Include="cGrid.cpp" />
     <ClCompile Include="cGroup.cpp" />
     <ClCompile Include="cKeyManager.cpp" />

@@ -28,6 +28,7 @@ cMainGame::~cMainGame()
 
     g_pLightManager->Destroy();
 	g_pTextureManager->Destroy();
+    g_pDrawTextManager->Destroy();
 
     // 오브젝트 빼는 작업 부터 하기!!!
     g_pAutoReleasePool->Drain();
@@ -46,6 +47,8 @@ void cMainGame::Setup()
 	//i.open("text.json", ios_base::in);
 	//i.close();
 	
+    g_pDrawTextManager->Setup();
+
 	srand(time(NULL));
 	rand();
 
@@ -131,11 +134,14 @@ void cMainGame::Render()
 
 	g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, true);
 
+    for each (auto p in m_vecGroup)
+        p->Render();
+
 	if (m_pCubeMan)
 		m_pCubeMan->Render();
 
-    for each (auto p in m_vecGroup)
-        p->Render();
+    RECT rt = { 10, 10, 200, 200 };
+    g_pDrawTextManager->DrawTextOut("Git D3DX Base", rt, WHITE, "도담9");
 
 	g_pD3DDevice->EndScene();
 
