@@ -120,6 +120,30 @@
     <ClInclude Include="cDrawTextManager.h">
       <Filter>클래스 파일\2. 매니져</Filter>
     </ClInclude>
+    <ClInclude Include="Asciitok.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="cAseLoader.h">
+      <Filter>클래스 파일\4. 캐릭터 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="cFrame.h">
+      <Filter>클래스 파일\4. 캐릭터 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="cAseCharacter.h">
+      <Filter>클래스 파일\4. 캐릭터 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="cHeightMap.h">
+      <Filter>클래스 파일\5. 맵 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="cRay.h">
+      <Filter>클래스 파일\1. 기본 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="cPicking.h">
+      <Filter>클래스 파일\1. 기본 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="cSpheres.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cCamera.cpp">
@@ -193,6 +217,27 @@
     </ClCompile>
     <ClCompile Include="cDrawTextManager.cpp">
       <Filter>클래스 파일\2. 매니져</Filter>
+    </ClCompile>
+    <ClCompile Include="cAseLoader.cpp">
+      <Filter>클래스 파일\4. 캐릭터 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="cFrame.cpp">
+      <Filter>클래스 파일\4. 캐릭터 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="cAseCharacter.cpp">
+      <Filter>클래스 파일\4. 캐릭터 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="cHeightMap.cpp">
+      <Filter>클래스 파일\5. 맵 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="cRay.cpp">
+      <Filter>클래스 파일\1. 기본 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="cPicking.cpp">
+      <Filter>클래스 파일\1. 기본 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="cSpheres.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

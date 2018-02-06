@@ -1,11 +1,12 @@
 #pragma once
+#include "cObject.h"
 
 class iMap;
 
 #define JUMP_POWER		1.5f
 #define JUMP_CNT_MAX	2
 
-class cCharacterController
+class cCharacterController : public cObject
 {
 private:
 	D3DXVECTOR3		m_vPosition;

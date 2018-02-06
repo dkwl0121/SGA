@@ -15,7 +15,7 @@ void cDrawTextManager::Setup()
 {
     ID3DXFont* font;
     m_sDefault = "굴림";
-    D3DXCreateFont(g_pD3DDevice, 50, 0, FW_BOLD, 1, false,
+    D3DXCreateFont(g_pD3DDevice, 20, 0, FW_BOLD, 1, false,
         DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY,
         DEFAULT_PITCH | FF_DONTCARE, (LPCSTR)m_sDefault.c_str(), &font);
 
@@ -51,7 +51,7 @@ void cDrawTextManager::DrawTextOut(string sText, RECT rt, D3DXCOLOR color, strin
         // 없는 폰트면 폰트 생성
         if (m_mapFont[sFontName] == NULL)
         {
-            D3DXCreateFont(g_pD3DDevice, 50, 0, FW_BOLD, 1, false,
+            D3DXCreateFont(g_pD3DDevice, 20, 0, FW_BOLD, 1, false,
                 DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY,
                 DEFAULT_PITCH | FF_DONTCARE, (LPCSTR)sFontName.c_str(), &m_mapFont[sFontName]);
         }

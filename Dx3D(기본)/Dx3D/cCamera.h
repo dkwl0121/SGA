@@ -1,9 +1,10 @@
 #pragma once
+#include "cObject.h"
 
 #define LOOKAT_POS 3.0f
 #define LIMITED_ROT 0.45f
 
-class cCamera
+class cCamera : public cObject
 {
 private:
 	float				m_fDistance;			// 큐브 기준 카메라 거리

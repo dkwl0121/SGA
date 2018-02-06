@@ -145,6 +145,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Asciitok.h" />
+    <ClInclude Include="cAseCharacter.h" />
+    <ClInclude Include="cAseLoader.h" />
     <ClInclude Include="cAutoReleasePool.h" />
     <ClInclude Include="cCamera.h" />
     <ClInclude Include="cCharacterController.h" />
@@ -152,8 +155,10 @@
     <ClInclude Include="cCubeMan.h" />
     <ClInclude Include="cDeviceManager.h" />
     <ClInclude Include="cDrawTextManager.h" />
+    <ClInclude Include="cFrame.h" />
     <ClInclude Include="cGrid.h" />
     <ClInclude Include="cGroup.h" />
+    <ClInclude Include="cHeightMap.h" />
     <ClInclude Include="cKeyManager.h" />
     <ClInclude Include="cLightManager.h" />
     <ClInclude Include="cMainGame.h" />
@@ -162,8 +167,11 @@
     <ClInclude Include="cObjectManager.h" />
     <ClInclude Include="cObjLoader.h" />
     <ClInclude Include="cObjMap.h" />
+    <ClInclude Include="cPicking.h" />
     <ClInclude Include="cPyramid.h" />
+    <ClInclude Include="cRay.h" />
     <ClInclude Include="cSoundManager.h" />
+    <ClInclude Include="cSpheres.h" />
     <ClInclude Include="cTextureManager.h" />
     <ClInclude Include="cTimeManager.h" />
     <ClInclude Include="D3DUtility.h" />
@@ -175,6 +183,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cAseCharacter.cpp" />
+    <ClCompile Include="cAseLoader.cpp" />
     <ClCompile Include="cAutoReleasePool.cpp" />
     <ClCompile Include="cCamera.cpp" />
     <ClCompile Include="cCharacterController.cpp" />
@@ -182,8 +192,10 @@
     <ClCompile Include="cCubeMan.cpp" />
     <ClCompile Include="cDeviceManager.cpp" />
     <ClCompile Include="cDrawTextManager.cpp" />
+    <ClCompile Include="cFrame.cpp" />
     <ClCompile Include="cGrid.cpp" />
     <ClCompile Include="cGroup.cpp" />
+    <ClCompile Include="cHeightMap.cpp" />
     <ClCompile Include="cKeyManager.cpp" />
     <ClCompile Include="cLightManager.cpp" />
     <ClCompile Include="cMainGame.cpp" />
@@ -192,8 +204,11 @@
     <ClCompile Include="cObjectManager.cpp" />
     <ClCompile Include="cObjLoader.cpp" />
     <ClCompile Include="cObjMap.cpp" />
+    <ClCompile Include="cPicking.cpp" />
     <ClCompile Include="cPyramid.cpp" />
+    <ClCompile Include="cRay.cpp" />
     <ClCompile Include="cSoundManager.cpp" />
+    <ClCompile Include="cSpheres.cpp" />
     <ClCompile Include="cTextureManager.cpp" />
     <ClCompile Include="cTimeManager.cpp" />
     <ClCompile Include="D3DUtility.cpp" />

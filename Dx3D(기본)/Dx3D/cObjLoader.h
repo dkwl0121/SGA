@@ -15,7 +15,7 @@ public:
 	cObjLoader();
 	~cObjLoader();
 
-	void Load(IN char* szFilePath, IN D3DXMATRIXA16* pMat,
-		OUT vector<cGroup*>& vecGroup);
+    LPD3DXMESH LoadMesh(IN char* szFilePath, IN D3DXMATRIXA16* pMat,
+        OUT vector<cMtlTex*>& vecMtlTex);
 };
 

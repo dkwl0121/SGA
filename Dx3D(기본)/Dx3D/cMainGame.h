@@ -1,22 +1,29 @@
 #pragma once
 
 class cCamera;
-class cGrid;
 class cCharacterController;
-class cCubeMan;
-class cGroup;
 class cObjMap;
+class cMtlTex;
+class cAseCharacter;
+class cHeightMap;
+class cGrid;
+class cPicking;
+class cSpheres;
 
 class cMainGame
 {
 private:
 	cCamera*				m_pCamera;
-	cGrid*					m_pGrid;
 	cCharacterController*	m_pController;
-	cCubeMan*				m_pCubeMan;
+    cAseCharacter*          m_pAseCharacter;
     cObjMap*				m_pObjMap;
+    cHeightMap*             m_pHeightMap;
+    cGrid*                  m_pGrid;
+    cPicking*               m_pPicking;
+    cSpheres*               m_pSpheres;
 
-    vector<cGroup*>			m_vecGroup;
+    LPD3DXMESH				m_pMeshMap;
+    vector<cMtlTex*>		m_vecMtlTex;
 
 	bool					m_IsTarget;		// 카메라가 타겟을 따라가야 하면
 

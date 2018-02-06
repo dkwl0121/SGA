@@ -64,7 +64,7 @@ void cCamera::Update(D3DXVECTOR3* pTarget/* = NULL*/)
 	}
 	if (g_nWheelDelta != 0)
 	{
-		m_fDistance -= g_nWheelDelta * 0.01f;
+		m_fDistance -= g_nWheelDelta * 0.1f;
 		g_nWheelDelta = 0;
 	}
 

@@ -1,30 +1,33 @@
 #include "stdafx.h"
 #include "cMainGame.h"
 #include "cCamera.h"
-#include "cGrid.h"
 #include "cCharacterController.h"
-#include "cCubeMan.h"
-#include "cGroup.h"
 #include "cObjMap.h"
 #include "cObjLoader.h"
+#include "cMtlTex.h"
+#include "cAseCharacter.h"
+#include "cHeightMap.h"
+#include "cGrid.h"
+#include "cPicking.h"
+#include "cSpheres.h"
 
 cMainGame::cMainGame()
 	: m_pCamera(NULL)
-	, m_pGrid(NULL)
 	, m_pController(NULL)
-	, m_pCubeMan(NULL)
     , m_pObjMap(NULL)
 	, m_IsTarget(true)
+    , m_pMeshMap(NULL)
+    , m_pAseCharacter(NULL)
+    , m_pHeightMap(NULL)
+    , m_pGrid(NULL)
+    , m_pPicking(NULL)
+    , m_pSpheres(NULL)
 {
 }
 
-
 cMainGame::~cMainGame()
 {
-	SAFE_DELETE(m_pCamera);
-	SAFE_DELETE(m_pController);
-	SAFE_DELETE(m_pGrid);
-	SAFE_DELETE(m_pCubeMan);
+    SAFE_RELEASE(m_pMeshMap);
 
     g_pLightManager->Destroy();
 	g_pTextureManager->Destroy();
@@ -47,6 +50,7 @@ void cMainGame::Setup()
 	//i.open("text.json", ios_base::in);
 	//i.close();
 	
+    g_pKeyManager->Setup();
     g_pDrawTextManager->Setup();
 
 	srand(time(NULL));
@@ -58,36 +62,53 @@ void cMainGame::Setup()
 	D3DLIGHT9 stLight = InitDirectional(&dir, &WHITE);
 	g_pLightManager->AddLight("main", stLight);
 
-	g_pKeyManager->Setup();
+    m_pGrid = new cGrid;
+    g_pAutoReleasePool->AddObject(m_pGrid);
+    m_pGrid->Setup();
 
 	m_pCamera = new cCamera;
+    g_pAutoReleasePool->AddObject(m_pCamera);
 	m_pCamera->Setup();
 
 	m_pController = new cCharacterController;
+    g_pAutoReleasePool->AddObject(m_pController);
 
-	m_pGrid = new cGrid;
-	m_pGrid->Setup();
+    m_pAseCharacter = new cAseCharacter;
+    g_pAutoReleasePool->AddObject(m_pAseCharacter);
+    m_pAseCharacter->Load("woman/woman_01_all.ase");
 
-	m_pCubeMan = new cCubeMan;
-    g_pAutoReleasePool->AddObject(m_pCubeMan);
-	m_pCubeMan->Setup();
-	m_pCubeMan->SetController(m_pController);
+    //// == OBJ 맵 ==
+    //D3DXMATRIXA16 mat, matS, matR, matT;
+    //D3DXMatrixIdentity(&mat);
+    //D3DXMatrixScaling(&matS, 0.05f, 0.05f, 0.05f);
+    //D3DXMatrixRotationX(&matR, -D3DX_PI * 0.5f);
+    //D3DXMatrixTranslation(&matT, 0, 0, -3);
+    //mat = matS * matR * matT;
 
-    D3DXMATRIXA16 mat, matS, matR, matT;
-    D3DXMatrixIdentity(&mat);
-    D3DXMatrixScaling(&matS, 0.05f, 0.05f, 0.05f);
-    D3DXMatrixRotationX(&matR, -D3DX_PI * 0.5f);
-    D3DXMatrixTranslation(&matT, 0, 0, -3);
-    mat = matS * matR * matT;
+    //cObjLoader* pObjLoader = new cObjLoader;
+    //m_pMeshMap = pObjLoader->LoadMesh("obj/map.obj", &mat, m_vecMtlTex);
+    //SAFE_RELEASE(pObjLoader);
 
-    cObjLoader* pObjLoader = new cObjLoader;
-    pObjLoader->Load("obj/map_surface.obj", &mat, m_vecGroup);
-    SAFE_RELEASE(pObjLoader);
+    //// == 지형 충돌처리 그룹 ==
+    //m_pObjMap = new cObjMap;
+    //g_pAutoReleasePool->AddObject(m_pObjMap);
+    //m_pObjMap->Load("obj/map_surface.obj", &mat);
 
-    // == 지형 충돌처리 그룹 ==
-    m_pObjMap = new cObjMap;
-    g_pAutoReleasePool->AddObject(m_pObjMap);
-    m_pObjMap->Load("obj/map_surface.obj", &mat);
+    // == 하이트맵 ==
+    m_pHeightMap = new cHeightMap;
+    g_pAutoReleasePool->AddObject(m_pHeightMap);
+    D3DXMATRIXA16 matW;
+    D3DXMatrixScaling(&matW, 1.0f, 1.0f, 1.0f);
+    m_pHeightMap->Load("HeightMapData/HeightMap.raw", &matW);
+
+    // 픽킹
+    m_pPicking = new cPicking;
+    g_pAutoReleasePool->AddObject(m_pPicking);
+    m_pPicking->Setup();
+
+    m_pSpheres = new cSpheres;
+    g_pAutoReleasePool->AddObject(m_pSpheres);
+    m_pSpheres->Setup();
 }
 
 void cMainGame::Update()
@@ -97,7 +118,7 @@ void cMainGame::Update()
 	m_IsTarget = g_pKeyManager->isToggleKey(VK_TAB);
 
 	if (m_pController)
-		m_pController->Update(m_IsTarget, m_pObjMap);
+		m_pController->Update(m_IsTarget, m_pHeightMap);
 
 	if (m_pCamera)
 	{
@@ -113,32 +134,53 @@ void cMainGame::Update()
 		}
 	}
 
-	if (m_pCubeMan)
-		m_pCubeMan->Update();
+    if (m_pAseCharacter)
+        m_pAseCharacter->Update(m_pController->GetWorldTM());
+
+    if (m_pPicking)
+        m_pPicking->Update(m_pSpheres->GetSphere());
 }
 
 void cMainGame::Render()
 {
-	g_pD3DDevice->Clear(NULL,
-		NULL,
-		D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER,
-		D3DCOLOR_XRGB(47, 121, 112),
-		1.0f, 0);
+	g_pD3DDevice->Clear(NULL, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER,
+		D3DCOLOR_XRGB(47, 121, 112), 1.0f, 0);
 
 	g_pD3DDevice->BeginScene();
 
-	g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, false);
+    g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, false);
 
-	if (m_pGrid)
-		m_pGrid->Render();
+    if (m_pGrid)
+        m_pGrid->Render();
 
-	g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, true);
+    //D3DXMATRIXA16 matW;
+    //D3DXMatrixIdentity(&matW);
+    //g_pD3DDevice->SetTransform(D3DTS_WORLD, &matW);
 
-    for each (auto p in m_vecGroup)
-        p->Render();
+    // 메쉬로 그리기
+    //for (int i = 0; i < m_vecMtlTex.size(); ++i)
+    //{
+    //    g_pD3DDevice->SetMaterial(m_vecMtlTex[i]->GetMtl());
+    //    g_pD3DDevice->SetTexture(0, m_vecMtlTex[i]->GetTexture());
+    //    m_pMeshMap->DrawSubset(i);
+    //}
 
-	if (m_pCubeMan)
-		m_pCubeMan->Render();
+    if (m_pHeightMap)
+        m_pHeightMap->Render();
+
+    if (m_pAseCharacter)
+        m_pAseCharacter->Render();
+
+    // 와이어 모드 출력
+    //g_pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+
+    g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, true);
+
+    if (m_pPicking)
+        m_pPicking->Render();
+
+    if (m_pSpheres)
+        m_pSpheres->Render();
 
     RECT rt = { 10, 10, 200, 200 };
     g_pDrawTextManager->DrawTextOut("Git D3DX Base", rt, WHITE, "도담9");

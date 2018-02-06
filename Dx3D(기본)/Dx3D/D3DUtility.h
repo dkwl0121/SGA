@@ -24,4 +24,11 @@ namespace D3DUTILITY
 	D3DLIGHT9 InitDirectional(D3DXVECTOR3* dir, D3DXCOLOR* c);
 	D3DLIGHT9 InitPoint(D3DXVECTOR3* pos, D3DXCOLOR* c);
 	D3DLIGHT9 InitSpot(D3DXVECTOR3* dir, D3DXVECTOR3* pos, D3DXCOLOR* c);
+
+    struct Sphere
+    {
+        D3DXVECTOR3         vPos;
+        float               fRadius;
+        bool                isPicking;
+    };
 }

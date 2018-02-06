@@ -34,12 +34,12 @@ void cTextureManager::AddTexture(string key, string fileName)
 LPDIRECT3DTEXTURE9& cTextureManager::GetTexture(string key)
 {
 	map<string, LPDIRECT3DTEXTURE9>::iterator iter;
-	LPDIRECT3DTEXTURE9 ret = NULL;
+	LPDIRECT3DTEXTURE9* ret = NULL;
 
 	iter = m_mapTexture.find(key);
 
 	if (iter != m_mapTexture.end())
-		ret = iter->second;
+        ret = &iter->second;
 
-	return ret;
+	return *ret;
 }
