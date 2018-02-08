@@ -148,6 +148,7 @@
     <ClInclude Include="Asciitok.h" />
     <ClInclude Include="cAseCharacter.h" />
     <ClInclude Include="cAseLoader.h" />
+    <ClInclude Include="cAster.h" />
     <ClInclude Include="cAutoReleasePool.h" />
     <ClInclude Include="cCamera.h" />
     <ClInclude Include="cCharacterController.h" />
@@ -163,6 +164,7 @@
     <ClInclude Include="cLightManager.h" />
     <ClInclude Include="cMainGame.h" />
     <ClInclude Include="cMtlTex.h" />
+    <ClInclude Include="cNode.h" />
     <ClInclude Include="cObject.h" />
     <ClInclude Include="cObjectManager.h" />
     <ClInclude Include="cObjLoader.h" />
@@ -171,7 +173,6 @@
     <ClInclude Include="cPyramid.h" />
     <ClInclude Include="cRay.h" />
     <ClInclude Include="cSoundManager.h" />
-    <ClInclude Include="cSpheres.h" />
     <ClInclude Include="cTextureManager.h" />
     <ClInclude Include="cTimeManager.h" />
     <ClInclude Include="D3DUtility.h" />
@@ -185,6 +186,7 @@
   <ItemGroup>
     <ClCompile Include="cAseCharacter.cpp" />
     <ClCompile Include="cAseLoader.cpp" />
+    <ClCompile Include="cAster.cpp" />
     <ClCompile Include="cAutoReleasePool.cpp" />
     <ClCompile Include="cCamera.cpp" />
     <ClCompile Include="cCharacterController.cpp" />
@@ -200,6 +202,7 @@
     <ClCompile Include="cLightManager.cpp" />
     <ClCompile Include="cMainGame.cpp" />
     <ClCompile Include="cMtlTex.cpp" />
+    <ClCompile Include="cNode.cpp" />
     <ClCompile Include="cObject.cpp" />
     <ClCompile Include="cObjectManager.cpp" />
     <ClCompile Include="cObjLoader.cpp" />
@@ -208,7 +211,6 @@
     <ClCompile Include="cPyramid.cpp" />
     <ClCompile Include="cRay.cpp" />
     <ClCompile Include="cSoundManager.cpp" />
-    <ClCompile Include="cSpheres.cpp" />
     <ClCompile Include="cTextureManager.cpp" />
     <ClCompile Include="cTimeManager.cpp" />
     <ClCompile Include="D3DUtility.cpp" />

@@ -8,7 +8,7 @@ class cAseCharacter;
 class cHeightMap;
 class cGrid;
 class cPicking;
-class cSpheres;
+class cAster;
 
 class cMainGame
 {
@@ -20,7 +20,7 @@ private:
     cHeightMap*             m_pHeightMap;
     cGrid*                  m_pGrid;
     cPicking*               m_pPicking;
-    cSpheres*               m_pSpheres;
+    cAster*                 m_pAster;
 
     LPD3DXMESH				m_pMeshMap;
     vector<cMtlTex*>		m_vecMtlTex;

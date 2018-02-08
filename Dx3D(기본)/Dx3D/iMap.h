@@ -10,5 +10,5 @@ interface iMap
 {
 	virtual void Load(IN char* szFilePath, IN D3DXMATRIXA16* pMat) PURE;
 	virtual bool GetHeight(IN const float& x, OUT float& y, IN const float& z) PURE;
-	//virtual void Test() PURE;
+    virtual bool ColisionRay(IN D3DXVECTOR3* vOrigin, IN D3DXVECTOR3* vDir, OUT D3DXVECTOR3& vPos) PURE;
 };

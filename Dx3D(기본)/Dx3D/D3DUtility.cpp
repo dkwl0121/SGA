@@ -3,7 +3,7 @@
 
 namespace D3DUTILITY
 {
-	D3DMATERIAL9 InitMtrl(D3DXCOLOR a, D3DXCOLOR d, D3DXCOLOR s, D3DXCOLOR e, float p)
+    D3DMATERIAL9 InitMtrl(D3DXCOLOR a, D3DXCOLOR d, D3DXCOLOR s, D3DXCOLOR e, float p)
 	{
 		D3DMATERIAL9 mtrl;
 		mtrl.Ambient = a;
@@ -15,6 +15,7 @@ namespace D3DUTILITY
 		return mtrl;
 	}
 
+    // »ï°¢ÇüÀÇ ³ë¸» º¤ÅÍ
 	void ComputeNormal(D3DXVECTOR3* out, D3DXVECTOR3* p0, D3DXVECTOR3* p1, D3DXVECTOR3* p2)
 	{
 		D3DXVECTOR3 v01 = *p1 - *p0;
@@ -23,6 +24,8 @@ namespace D3DUTILITY
 		D3DXVec3Cross(out, &v01, &v02);
 		D3DXVec3Normalize(out, out);
 	}
+
+    //
 
 	D3DLIGHT9 InitDirectional(D3DXVECTOR3* dir, D3DXCOLOR* c)
 	{

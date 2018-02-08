@@ -12,6 +12,8 @@ private:
     int             m_nLastTick;
     int             m_nTickSpeed;
 
+    float           m_fMoveSpeed;
+
 public:
 	cAseCharacter();
 	~cAseCharacter();

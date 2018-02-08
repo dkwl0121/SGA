@@ -5,6 +5,7 @@
 
 cAseCharacter::cAseCharacter()
 	: m_pRootFrame(NULL)
+    , m_fMoveSpeed(1.0f)
 {
 }
 
@@ -39,7 +40,7 @@ void cAseCharacter::Update(D3DXMATRIXA16* matWorld/*=NULL*/)
     D3DXMatrixRotationY(&matR, D3DX_PI);
 
     matW = matS * matR;
-    
+
     if (matWorld)
         matW *= *matWorld;
 

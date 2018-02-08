@@ -9,7 +9,7 @@
 #include "cHeightMap.h"
 #include "cGrid.h"
 #include "cPicking.h"
-#include "cSpheres.h"
+#include "cAster.h"
 
 cMainGame::cMainGame()
 	: m_pCamera(NULL)
@@ -21,7 +21,7 @@ cMainGame::cMainGame()
     , m_pHeightMap(NULL)
     , m_pGrid(NULL)
     , m_pPicking(NULL)
-    , m_pSpheres(NULL)
+    , m_pAster(NULL)
 {
 }
 
@@ -106,9 +106,10 @@ void cMainGame::Setup()
     g_pAutoReleasePool->AddObject(m_pPicking);
     m_pPicking->Setup();
 
-    m_pSpheres = new cSpheres;
-    g_pAutoReleasePool->AddObject(m_pSpheres);
-    m_pSpheres->Setup();
+    // 에이스타
+    m_pAster = new cAster;
+    g_pAutoReleasePool->AddObject(m_pAster);
+    m_pAster->Setup(m_pHeightMap->GetVertex());
 }
 
 void cMainGame::Update()
@@ -117,8 +118,29 @@ void cMainGame::Update()
 
 	m_IsTarget = g_pKeyManager->isToggleKey(VK_TAB);
 
-	if (m_pController)
-		m_pController->Update(m_IsTarget, m_pHeightMap);
+    if (m_pPicking)
+        m_pPicking->Update(m_pHeightMap);
+
+    // 픽킹을 했으면
+    if (m_pPicking->GetIsPick())
+    {
+        m_pPicking->SetIsPick(false);
+        m_pAster->FindPath(*m_pController->GetPosition(), m_pPicking->GetPickPos()); // 시작점, 도착점 넣기
+        m_pController->SetDestPos(*m_pController->GetPosition()); // 픽킹을 했으면 설정된 도착지점 초기화 하기
+    }
+
+    vector<D3DXVECTOR3>& path = m_pAster->GetPath();
+    if (!path.empty() && !m_pController->GetIsMoving())
+    {
+        m_pController->SetDestPos(path.back());
+        path.pop_back();
+    }
+
+    if (m_pController)
+        m_pController->Update(m_IsTarget, m_pHeightMap);
+
+    if (m_pAseCharacter)
+        m_pAseCharacter->Update(m_pController->GetWorldTM());
 
 	if (m_pCamera)
 	{
@@ -133,12 +155,6 @@ void cMainGame::Update()
 			m_pCamera->Update();
 		}
 	}
-
-    if (m_pAseCharacter)
-        m_pAseCharacter->Update(m_pController->GetWorldTM());
-
-    if (m_pPicking)
-        m_pPicking->Update(m_pSpheres->GetSphere());
 }
 
 void cMainGame::Render()
@@ -176,11 +192,8 @@ void cMainGame::Render()
 
     g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, true);
 
-    if (m_pPicking)
-        m_pPicking->Render();
-
-    if (m_pSpheres)
-        m_pSpheres->Render();
+    if (m_pAster)
+        m_pAster->Render();
 
     RECT rt = { 10, 10, 200, 200 };
     g_pDrawTextManager->DrawTextOut("Git D3DX Base", rt, WHITE, "도담9");

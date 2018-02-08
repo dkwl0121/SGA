@@ -6,9 +6,10 @@ class cMtlTex;
 
 class cHeightMap : public cObject, public iMap
 {
+    SYNTHESIZE_PASS_BY_REF(vector<D3DXVECTOR3>, m_vecVertex, Vertex);
+
 private:
 	LPD3DXMESH				m_pMesh;
-	vector<D3DXVECTOR3>		m_vecVertex;
 	cMtlTex*				m_pMtlTex;
     
 	float					m_fSizeX;
@@ -20,6 +21,7 @@ public:
 
 	virtual void Load(IN char* szFilePath, IN D3DXMATRIXA16* pMat) override;
 	virtual bool GetHeight(IN const float& x, OUT float& y, IN const float& z) override;
+    virtual bool ColisionRay(IN D3DXVECTOR3* vOrigin, IN D3DXVECTOR3* vDir, OUT D3DXVECTOR3& vPos) override;
 	void Render();
 };
 

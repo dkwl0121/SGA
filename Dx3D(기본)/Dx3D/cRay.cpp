@@ -8,7 +8,6 @@ cRay::cRay()
 {
 }
 
-
 cRay::~cRay()
 {
 }

@@ -10,6 +10,8 @@ class cCharacterController : public cObject
 {
 private:
 	D3DXVECTOR3		m_vPosition;
+    D3DXVECTOR3     m_vDestPos;
+
 	float			m_fMoveSpeed;
 	float			m_fRotY;
 	D3DXVECTOR3		m_vDirection;
@@ -17,6 +19,7 @@ private:
 	D3DXMATRIXA16	m_matWorld;
 
 	bool			m_isMoving;
+    bool            m_isSetDest;
 	int				m_nJumpCnt;
 	float			m_fCurrGravity;
 
@@ -34,5 +37,6 @@ public:
 
 	// ╪бем
 	void SetIsMoving(bool move) { m_isMoving = false; }
+    void SetDestPos(D3DXVECTOR3 dest) { m_vDestPos = dest; m_isSetDest = true; }
 };
 

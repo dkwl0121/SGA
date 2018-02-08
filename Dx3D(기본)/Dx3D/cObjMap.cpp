@@ -74,3 +74,8 @@ bool cObjMap::GetHeight(IN const float& x, OUT float& y, IN const float& z)
 
 	return ret;
 }
+
+bool cObjMap::ColisionRay(IN D3DXVECTOR3* vOrigin, IN D3DXVECTOR3* vDir, OUT D3DXVECTOR3& vPos)
+{
+    return false;
+}

@@ -1,26 +1,28 @@
 #include "stdafx.h"
 #include "cPicking.h"
 #include "cRay.h"
+#include "iMap.h"
 
 cPicking::cPicking()
-    : m_pMeshSphere(NULL)
-    , m_vPickPos(0, 0, 0)
+    //: m_pMeshSphere(NULL)
+    : m_vPickPos(0, 0, 0)
     , m_isPick(false)
 {
 }
 
 cPicking::~cPicking()
 {
-    SAFE_RELEASE(m_pMeshSphere);
+    //SAFE_RELEASE(m_pMeshSphere);
 }
 
 void cPicking::Setup()
 {
+
     // 구 만들기                // 반지름, 삼각형(페이스) 개수
-    D3DXCreateSphere(g_pD3DDevice, 0.5f, 10, 10, &m_pMeshSphere, NULL);
+    //D3DXCreateSphere(g_pD3DDevice, 0.5f, 10, 10, &m_pMeshSphere, NULL);
 }
 
-void cPicking::Update(vector<Sphere>& spheres)
+void cPicking::Update(iMap* pMap/*=NULL*/)
 {
     if (g_pKeyManager->isOnceKeyDown(VK_LBUTTON))
     {
@@ -33,45 +35,29 @@ void cPicking::Update(vector<Sphere>& spheres)
         D3DXMatrixInverse(&matView, NULL, &matView);
         Ray.TransformRay(&matView);
 
-        float fDistance;
-
-        if (D3DXIntersectTri(&D3DXVECTOR3(-5, 0, -5), &D3DXVECTOR3(-5, 0, 5), &D3DXVECTOR3(5, 0, 5),
-            &Ray.GetOrigin(), &Ray.GetDirection(), NULL, NULL, &fDistance))
+        // 충돌 체크 지형이 있다면
+        if (pMap)
         {
-            D3DXVECTOR3 vDistance(Ray.GetDirection() * fDistance);
-            m_vPickPos = Ray.GetOrigin() + vDistance;
-            m_isPick = true;
-        }
-        else if (D3DXIntersectTri(&D3DXVECTOR3(-5, 0, -5), &D3DXVECTOR3(5, 0, 5), &D3DXVECTOR3(5, 0, -5),
-            &Ray.GetOrigin(), &Ray.GetDirection(), NULL, NULL, &fDistance))
-        {
-            D3DXVECTOR3 vDistance(Ray.GetDirection() * fDistance);
-            m_vPickPos = Ray.GetOrigin() + vDistance;
-            m_isPick = true;
-        }
-
-        // 구 충돌
-        for (int i = 0; i < spheres.size(); ++i)
-        {
-            spheres[i].isPicking = Ray.IntersectSphere(spheres[i]);
+            // 지형과 충돌 했다면 true / 아니면 false -> PickPos에 좌표값 넘겨줌.
+            m_isPick = pMap->ColisionRay(&Ray.GetOrigin(), &Ray.GetDirection(), m_vPickPos);
         }
     }
 }
 
-void cPicking::Render()
-{
-    D3DXMATRIXA16 mat;
-    D3DXMatrixTranslation(&mat, m_vPickPos.x, m_vPickPos.y, m_vPickPos.z);
-
-    // 픽킹 했으면
-    if (m_isPick)
-    {
-        g_pD3DDevice->SetTransform(D3DTS_WORLD, &mat);
-        g_pD3DDevice->SetTexture(0, NULL);
-        g_pD3DDevice->SetMaterial(&YELLOW_MTRL);
-        m_pMeshSphere->DrawSubset(0);
-    }
-}
+//void cPicking::Render()
+//{
+//    D3DXMATRIXA16 mat;
+//    D3DXMatrixTranslation(&mat, m_vPickPos.x, m_vPickPos.y, m_vPickPos.z);
+//
+//    // 픽킹 했으면
+//    if (m_isPick)
+//    {
+//        g_pD3DDevice->SetTransform(D3DTS_WORLD, &mat);
+//        g_pD3DDevice->SetTexture(0, NULL);
+//        g_pD3DDevice->SetMaterial(&YELLOW_MTRL);
+//        m_pMeshSphere->DrawSubset(0);
+//    }
+//}
 
 
 /*

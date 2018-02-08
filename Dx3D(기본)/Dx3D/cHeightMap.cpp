@@ -175,6 +175,7 @@ void cHeightMap::Load(IN char* szFilePath, IN D3DXMATRIXA16* pMat)
     */
 }
 
+// 캐릭터 지형 체크
 bool cHeightMap::GetHeight(IN const float& x, OUT float& y, IN const float& z)
 {
     int nX = int(x / m_fSizeX);
@@ -223,6 +224,50 @@ bool cHeightMap::GetHeight(IN const float& x, OUT float& y, IN const float& z)
     //    | \ | 아래쪽 삼각형일 경우 : 0.y + x 축 높이 차이 * 델타x + z 축 높이 차이 * 델타z
     //    | \ | 윗쪽 삼각형일 경우 : 3.y + x 축 높이 차이 * (1.0f - 델타x) + z 축 높이 차이 * (1.0f - 델타z)
     //    0--2
+}
+
+// 픽킹 체크
+bool cHeightMap::ColisionRay(IN D3DXVECTOR3* vOrigin, IN D3DXVECTOR3* vDir, OUT D3DXVECTOR3& vPos)
+{
+    float fMinDist = D3DX_16F_MAX;
+    float fDistance;
+    bool ret = false;
+
+    // 삼각형에 따른 픽킹 체크
+    for (int z = 0; z < 257 - 1; ++z)
+    {
+        for (int x = 0; x < 257 - 1; ++x)
+        {
+            int index = z * 257 + x;
+            // 하단 삼각형
+            if (D3DXIntersectTri(&m_vecVertex[index], &m_vecVertex[index + 257], &m_vecVertex[index + 1],
+                vOrigin, vDir, NULL, NULL, &fDistance))
+            {
+                if (fDistance < fMinDist)
+                {
+                    fMinDist = fDistance;
+                    D3DXVECTOR3 vDistance(*vDir * fDistance);
+                    vPos = *vOrigin + vDistance;
+                    ret = true;
+                }
+            }
+            // 상단 삼각형
+            else if (D3DXIntersectTri(&m_vecVertex[index + 257], &m_vecVertex[index + 257 + 1], &m_vecVertex[index + 1],
+                vOrigin, vDir, NULL, NULL, &fDistance))
+            {
+                if (fDistance < fMinDist)
+                {
+                    fMinDist = fDistance;
+                    D3DXVECTOR3 vDistance(*vDir * fDistance);
+                    vPos = *vOrigin + vDistance;
+                    ret = true;
+                }
+            }
+
+        }
+    }
+
+    return ret;
 }
 
 void cHeightMap::Render()

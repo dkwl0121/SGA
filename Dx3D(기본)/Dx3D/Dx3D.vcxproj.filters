@@ -141,8 +141,11 @@
     <ClInclude Include="cPicking.h">
       <Filter>클래스 파일\1. 기본 클래스</Filter>
     </ClInclude>
-    <ClInclude Include="cSpheres.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="cNode.h">
+      <Filter>클래스 파일\1. 기본 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="cAster.h">
+      <Filter>클래스 파일\5. 맵 클래스</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -236,8 +239,11 @@
     <ClCompile Include="cPicking.cpp">
       <Filter>클래스 파일\1. 기본 클래스</Filter>
     </ClCompile>
-    <ClCompile Include="cSpheres.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="cNode.cpp">
+      <Filter>클래스 파일\1. 기본 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="cAster.cpp">
+      <Filter>클래스 파일\5. 맵 클래스</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
