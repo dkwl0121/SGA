@@ -9,7 +9,7 @@ struct ST_EdgeInfo
 	float	fEdgeCost;
 };
 
-enum eNodeState { E_NONE, E_OPEN, E_CLOSE, E_USING };  // E_USING == 마지막으로 선택된 노드
+enum eNodeState { E_NONE, E_OPEN, E_CLOSE, E_USING, E_BLOCK };  // E_USING == 최종경로에 포함된 노드 E_BLOCK == 못가는 노드
 
 class cNode : public cObject
 {

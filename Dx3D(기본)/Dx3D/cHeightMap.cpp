@@ -53,10 +53,10 @@ void cHeightMap::Load(IN char* szFilePath, IN D3DXMATRIXA16* pMat)
         ST_PNT_VERTEX stPNT;
         stPNT.p = vPos;
         stPNT.n = D3DXVECTOR3(0, 1, 0);
-        stPNT.t = D3DXVECTOR2((float)nX / 256, (float)nZ / 256);
+        stPNT.t = D3DXVECTOR2((float)nX / TILE_CNT, (float)nZ / TILE_CNT);
         vecPNT.push_back(stPNT);
 
-        if (++nX > 256)
+        if (++nX > TILE_CNT)
         {
             nX = 0;
             ++nZ;
@@ -64,12 +64,34 @@ void cHeightMap::Load(IN char* szFilePath, IN D3DXMATRIXA16* pMat)
     }
 
     fclose(pFile);
+
+    // == 파트 셋팅 ==
+    for (int z = 0; z < PART_CNT; ++z)
+    {
+        for (int x = 0; x < PART_CNT; ++x)
+        {
+            tagPart stPart;
+            stPart.nMinIndexZ = z * PART_VERTEX_CNT;
+            stPart.nMaxIndexZ = (z + 1) * PART_VERTEX_CNT;
+            stPart.nMinIndexX = x * PART_VERTEX_CNT;
+            stPart.nMaxIndexX = (x + 1) * PART_VERTEX_CNT;
+            stPart.vecVertex.push_back(m_vecVertex[stPart.nMinIndexZ * VERTEX_CNT + stPart.nMinIndexX]);
+            stPart.vecVertex.push_back(m_vecVertex[stPart.nMaxIndexZ * VERTEX_CNT + stPart.nMinIndexX]);
+            stPart.vecVertex.push_back(m_vecVertex[stPart.nMinIndexZ * VERTEX_CNT + stPart.nMaxIndexX]);
+
+            stPart.vecVertex.push_back(m_vecVertex[stPart.nMaxIndexZ * VERTEX_CNT + stPart.nMinIndexX]);
+            stPart.vecVertex.push_back(m_vecVertex[stPart.nMaxIndexZ * VERTEX_CNT + stPart.nMaxIndexX]);
+            stPart.vecVertex.push_back(m_vecVertex[stPart.nMinIndexZ * VERTEX_CNT + stPart.nMaxIndexX]);
+
+            m_vecStPart.push_back(stPart);
+        }
+    }
     
     vector<DWORD> vecIndex;
     // == 인덱스 구성
-    for (int z = 0; z < 256; ++z)
+    for (int z = 0; z < TILE_CNT; ++z)
     {
-        for (int x = 0; x < 256; ++x)
+        for (int x = 0; x < TILE_CNT; ++x)
         {
             // 0 1 2  1 3 2
             //0 = z * 257 + x
@@ -78,25 +100,25 @@ void cHeightMap::Load(IN char* szFilePath, IN D3DXMATRIXA16* pMat)
             //3 = (z + 1) * 257 + x + 1
 
             // 하단
-            vecIndex.push_back(z * 257 + x);
-            vecIndex.push_back((z + 1) * 257 + x);
-            vecIndex.push_back(z * 257 + (x + 1));
+            vecIndex.push_back(z * VERTEX_CNT + x);
+            vecIndex.push_back((z + 1) * VERTEX_CNT + x);
+            vecIndex.push_back(z * VERTEX_CNT + (x + 1));
 
             // 상단
-            vecIndex.push_back((z + 1) * 257 + x);
-            vecIndex.push_back((z + 1) * 257 + (x + 1));
-            vecIndex.push_back(z * 257 + (x + 1));
+            vecIndex.push_back((z + 1) * VERTEX_CNT + x);
+            vecIndex.push_back((z + 1) * VERTEX_CNT + (x + 1));
+            vecIndex.push_back(z * VERTEX_CNT + (x + 1));
         }
     }
 
     // 노말값 셋팅 -> 양 사이드 값은 (0, 1, 0)으로 기본 셋팅 == 바꾸지 않으면 기본 셋팅
-    for (int z = 1; z < 257 - 1; ++z)
+    for (int z = 1; z < VERTEX_CNT - 1; ++z)
     {
-        for (int x = 1; x < 257 - 1; ++x)
+        for (int x = 1; x < VERTEX_CNT - 1; ++x)
         {
-            int index = z * 257 + x;
+            int index = z * VERTEX_CNT + x;
             D3DXVECTOR3 vCol, vRow, vNormal;    
-            vCol = vecPNT[index + 257].p - vecPNT[index - 257].p;
+            vCol = vecPNT[index + VERTEX_CNT].p - vecPNT[index - VERTEX_CNT].p;
             vRow = vecPNT[index + 1].p - vecPNT[index - 1].p;
             D3DXVec3Cross(&vNormal, &vCol, &vRow);
             D3DXVec3Normalize(&vNormal, &vNormal);
@@ -182,7 +204,7 @@ bool cHeightMap::GetHeight(IN const float& x, OUT float& y, IN const float& z)
     int nZ = int(z / m_fSizeZ);
 
     // 캐릭터가 지형물 안에 없으면
-    if (nX < 0 && nZ < 0 && nX >= 256 && nZ >= 256)
+    if (nX < 0 || nZ < 0 || nX >= TILE_CNT || nZ >= TILE_CNT)
         return false;
 
     float fDeltaX = (x / m_fSizeX) - (float)nX;
@@ -190,16 +212,16 @@ bool cHeightMap::GetHeight(IN const float& x, OUT float& y, IN const float& z)
     // 아래쪽 삼각형
     if (fDeltaX + fDeltaZ < 1)
     {
-        float fX_Y = (m_vecVertex[nZ * 257 + (nX + 1)].y - m_vecVertex[nZ * 257 + nX].y) * fDeltaX;     // X쪽 보간 Y값
-        float fZ_Y = (m_vecVertex[(nZ + 1) * 257 + nX].y - m_vecVertex[nZ * 257 + nX].y) * fDeltaZ;     // Z쪽 보간 Y값
-        y = m_vecVertex[nZ * 257 + nX].y + fX_Y + fZ_Y;
+        float fX_Y = (m_vecVertex[nZ * VERTEX_CNT + (nX + 1)].y - m_vecVertex[nZ * VERTEX_CNT + nX].y) * fDeltaX;     // X쪽 보간 Y값
+        float fZ_Y = (m_vecVertex[(nZ + 1) * VERTEX_CNT + nX].y - m_vecVertex[nZ * VERTEX_CNT + nX].y) * fDeltaZ;     // Z쪽 보간 Y값
+        y = m_vecVertex[nZ * VERTEX_CNT + nX].y + fX_Y + fZ_Y;
     }
     // 위쪽 삼각형
     else
     {
-        float fX_Y = (m_vecVertex[(nZ + 1) * 257 + nX].y - m_vecVertex[(nZ + 1) * 257 + (nX + 1)].y) * (1.0f - fDeltaX);
-        float fZ_Y = (m_vecVertex[nZ * 257 + (nX + 1)].y - m_vecVertex[(nZ + 1) * 257 + (nX + 1)].y) * (1.0f - fDeltaZ);
-        y = m_vecVertex[(nZ + 1) * 257 + (nX + 1)].y + fX_Y + fZ_Y;
+        float fX_Y = (m_vecVertex[(nZ + 1) * VERTEX_CNT + nX].y - m_vecVertex[(nZ + 1) * VERTEX_CNT + (nX + 1)].y) * (1.0f - fDeltaX);
+        float fZ_Y = (m_vecVertex[nZ * VERTEX_CNT + (nX + 1)].y - m_vecVertex[(nZ + 1) * VERTEX_CNT + (nX + 1)].y) * (1.0f - fDeltaZ);
+        y = m_vecVertex[(nZ + 1) * VERTEX_CNT + (nX + 1)].y + fX_Y + fZ_Y;
     }
 
     return true;
@@ -229,45 +251,75 @@ bool cHeightMap::GetHeight(IN const float& x, OUT float& y, IN const float& z)
 // 픽킹 체크
 bool cHeightMap::ColisionRay(IN D3DXVECTOR3* vOrigin, IN D3DXVECTOR3* vDir, OUT D3DXVECTOR3& vPos)
 {
-    float fMinDist = D3DX_16F_MAX;
-    float fDistance;
-    bool ret = false;
+    bool isCol = false;
+    tagPart stPart;
 
-    // 삼각형에 따른 픽킹 체크
-    for (int z = 0; z < 257 - 1; ++z)
+    // 파트에 따른 픽킹 체크
+    for each (auto iter in m_vecStPart)
     {
-        for (int x = 0; x < 257 - 1; ++x)
+        // 하단 삼각형
+        if (D3DXIntersectTri(&iter.vecVertex[0], &iter.vecVertex[1], &iter.vecVertex[2],
+            vOrigin, vDir, NULL, NULL, NULL))
         {
-            int index = z * 257 + x;
-            // 하단 삼각형
-            if (D3DXIntersectTri(&m_vecVertex[index], &m_vecVertex[index + 257], &m_vecVertex[index + 1],
-                vOrigin, vDir, NULL, NULL, &fDistance))
-            {
-                if (fDistance < fMinDist)
-                {
-                    fMinDist = fDistance;
-                    D3DXVECTOR3 vDistance(*vDir * fDistance);
-                    vPos = *vOrigin + vDistance;
-                    ret = true;
-                }
-            }
-            // 상단 삼각형
-            else if (D3DXIntersectTri(&m_vecVertex[index + 257], &m_vecVertex[index + 257 + 1], &m_vecVertex[index + 1],
-                vOrigin, vDir, NULL, NULL, &fDistance))
-            {
-                if (fDistance < fMinDist)
-                {
-                    fMinDist = fDistance;
-                    D3DXVECTOR3 vDistance(*vDir * fDistance);
-                    vPos = *vOrigin + vDistance;
-                    ret = true;
-                }
-            }
-
+            stPart = iter;
+            isCol = true;
+            break;
+        }
+        // 상단 삼각형
+        else if (D3DXIntersectTri(&iter.vecVertex[3], &iter.vecVertex[4], &iter.vecVertex[5],
+            vOrigin, vDir, NULL, NULL, NULL))
+        {
+            stPart = iter;
+            isCol = true;
+            break;
         }
     }
 
-    return ret;
+    // 픽킹체크가 true면
+    if (isCol)
+    {
+        float fMinDist = D3DX_16F_MAX;
+        float fDistance;
+
+        // 파트에 해당하는 삼각형과 픽킹 체크
+        for (int z = stPart.nMinIndexZ; z < stPart.nMaxIndexZ; ++z)
+        {
+            for (int x = stPart.nMinIndexX; x < stPart.nMaxIndexX; ++x)
+            {
+                int index = z * VERTEX_CNT + x;
+                // 하단 삼각형
+                if (D3DXIntersectTri(&m_vecVertex[index], &m_vecVertex[index + VERTEX_CNT], &m_vecVertex[index + 1],
+                    vOrigin, vDir, NULL, NULL, &fDistance))
+                {
+                    if (fDistance < fMinDist)
+                    {
+                        fMinDist = fDistance;
+                        D3DXVECTOR3 vDistance(*vDir * fDistance);
+                        vPos = *vOrigin + vDistance;
+                    }
+                }
+                // 상단 삼각형
+                else if (D3DXIntersectTri(&m_vecVertex[index + VERTEX_CNT], &m_vecVertex[index + VERTEX_CNT + 1], &m_vecVertex[index + 1],
+                    vOrigin, vDir, NULL, NULL, &fDistance))
+                {
+                    if (fDistance < fMinDist)
+                    {
+                        fMinDist = fDistance;
+                        D3DXVECTOR3 vDistance(*vDir * fDistance);
+                        vPos = *vOrigin + vDistance;
+                    }
+                }
+
+            }
+        }
+    }
+
+    return isCol;
+}
+
+vector<D3DXVECTOR3> cHeightMap::GetVertex()
+{
+    return m_vecVertex;
 }
 
 void cHeightMap::Render()

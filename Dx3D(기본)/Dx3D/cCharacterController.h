@@ -2,6 +2,9 @@
 #include "cObject.h"
 
 class iMap;
+class cRay;
+class cAstar;
+class iObstacle;
 
 #define JUMP_POWER		1.5f
 #define JUMP_CNT_MAX	2
@@ -9,26 +12,38 @@ class iMap;
 class cCharacterController : public cObject
 {
 private:
-	D3DXVECTOR3		m_vPosition;
-    D3DXVECTOR3     m_vDestPos;
+	D3DXVECTOR3		        m_vPosition;
+    D3DXVECTOR3             m_vDestPos;
 
-	float			m_fMoveSpeed;
-	float			m_fRotY;
-	D3DXVECTOR3		m_vDirection;
+	float			        m_fMoveSpeed;
+	float			        m_fRotY;
+	D3DXVECTOR3		        m_vDirection;
 
-	D3DXMATRIXA16	m_matWorld;
+	D3DXMATRIXA16	        m_matWorld;
 
-	bool			m_isMoving;
-    bool            m_isSetDest;
-	int				m_nJumpCnt;
-	float			m_fCurrGravity;
+	bool			        m_isMoving;
+    bool                    m_isSetDest;
+	int				        m_nJumpCnt;
+	float			        m_fCurrGravity;
+
+    iMap*                   m_piMap;
+    cAstar*                 m_pAStar;
+    vector<D3DXVECTOR3>     m_vecPath;
+
+private:
+
+    bool CheckFrontRay(vector<D3DXVECTOR3> vecVertex, D3DXVECTOR3 vDest);
 
 public:
 	cCharacterController();
 	~cCharacterController();
+    
+    void Setup(iMap* pMap);
+	void Update(bool IsControl);
+    void Render();
 
-	void Update(bool IsControl, iMap* pMap = NULL);
-	
+    void SetPick(cRay* Ray, iObstacle* piObstacle = NULL);
+
 	// ╟ыем
 	D3DXVECTOR3* GetPosition() { return &m_vPosition; }
 	D3DXVECTOR3* GetDirection() { return &m_vDirection; }
@@ -37,6 +52,5 @@ public:
 
 	// ╪бем
 	void SetIsMoving(bool move) { m_isMoving = false; }
-    void SetDestPos(D3DXVECTOR3 dest) { m_vDestPos = dest; m_isSetDest = true; }
 };
 

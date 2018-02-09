@@ -8,6 +8,9 @@ cCube::cCube()
 	, m_fRotY(0)
 	, m_fRotXSpeed(0)
 	, m_fRotYSpeed(0)
+    , m_fRadiusX(1)
+    , m_fRadiusY(1)
+    , m_fRadiusZ(1)
 	, m_isMoving(false)
 	, m_vCenter(0, 0, 0)
 	, m_pTexture(NULL)
@@ -38,10 +41,19 @@ void cCube::Setup(vector<D3DXVECTOR2>* vecT, string key, D3DMATERIAL9 material, 
 
 	if (pMat)
 	{
+        m_vCenter = D3DXVECTOR3(pMat->_41, pMat->_42, pMat->_43);
+
+        //pMat->_41 = 0.0f;
+        //pMat->_42 = 0.0f;
+        //pMat->_43 = 0.0f;
+
+        // 반지름 사이즈
+        m_fRadiusX = pMat->_11;
+        m_fRadiusY = pMat->_22;
+        m_fRadiusZ = pMat->_33;
+
 		for (int i = 0; i < vecVertex.size(); ++i)
 			D3DXVec3TransformCoord(&vecVertex[i], &vecVertex[i], pMat);
-
-		//D3DXVECTOR3(pMat->_41, pMat->_42, pMat->_43);
 	}
 
 	vector<int>	vecIndex;
@@ -126,8 +138,6 @@ void cCube::SetPNVertex(vector<D3DXVECTOR3>& vecV, vector<int>& vecI)
         pPNVertex[index++] = ST_PN_VERTEX(vecV[vecI[i + 5]], n);
     }
 
-    m_vb->Unlock(); // 언락!!
-
     // 인덱스 버퍼 접근시 락 설정!
     m_ib->Lock(NULL, NULL, (LPVOID*)&pIndex, NULL);
 
@@ -143,6 +153,13 @@ void cCube::SetPNVertex(vector<D3DXVECTOR3>& vecV, vector<int>& vecI)
         index += 4;
     }
 
+    // 버텍스 정보만 저장
+    for (int i = 0; i < 36; ++i)
+    {
+        m_vecVertex.push_back(pPNVertex[pIndex[i]].p);
+    }
+
+    m_vb->Unlock(); // 언락!!
     m_ib->Unlock(); // 언락!!
 }
 
@@ -168,6 +185,12 @@ void cCube::SetPNTVertex(vector<D3DXVECTOR3>& vecV, vector<int>& vecI, vector<D3
         pPNTVertex[i + 3] = ST_PNT_VERTEX(vecV[vecI[i + 3]], n, (*vecT)[(i + 3) % (*vecT).size()]);
         pPNTVertex[i + 4] = ST_PNT_VERTEX(vecV[vecI[i + 4]], n, (*vecT)[(i + 4) % (*vecT).size()]);
         pPNTVertex[i + 5] = ST_PNT_VERTEX(vecV[vecI[i + 5]], n, (*vecT)[(i + 5) % (*vecT).size()]);
+    }
+
+    // 버텍스 정보만 저장
+    for (int i = 0; i < 36; ++i)
+    {
+        m_vecVertex.push_back(pPNTVertex[i].p);
     }
 
     m_vb->Unlock(); // 언락!!
@@ -268,21 +291,6 @@ void cCube::SetIsMoving(bool move)
 		m_vecChild[i]->SetIsMoving(move);
 }
 
-// AABB 충돌
-bool cCube::Collision(D3DXVECTOR3& center)
-{
-	bool isCol = false;
-	float fRadius = BLANK_DISTANCE * 0.5f;
-
-	// 충돌 했으면
-	if (m_vCenter.x - fRadius < center.x + fRadius && m_vCenter.x + fRadius > center.x - fRadius
-		&& m_vCenter.y - fRadius < center.y + fRadius && m_vCenter.y + fRadius > center.y - fRadius
-		&& m_vCenter.z - fRadius < center.z + fRadius && m_vCenter.z + fRadius > center.z - fRadius)
-		isCol = true;
-
-	return isCol;
-}
-
 // 구충돌
 //bool cCube::Collision(D3DXVECTOR3& center, float radius)
 //{
@@ -300,3 +308,71 @@ bool cCube::Collision(D3DXVECTOR3& center)
 //
 //	return isCol;
 //}
+
+//// AABB 충돌
+//bool cCube::Collision(D3DXVECTOR3& center)
+//{
+//	bool isCol = false;
+//	float fRadius = BLANK_DISTANCE * 0.5f;
+//
+//	// 충돌 했으면
+//	if (m_vCenter.x - fRadius < center.x + fRadius && m_vCenter.x + fRadius > center.x - fRadius
+//		&& m_vCenter.y - fRadius < center.y + fRadius && m_vCenter.y + fRadius > center.y - fRadius
+//		&& m_vCenter.z - fRadius < center.z + fRadius && m_vCenter.z + fRadius > center.z - fRadius)
+//		isCol = true;
+//
+//	return isCol;
+//}
+
+//// 레이 충돌
+//bool cCube::CollisionRay(D3DXVECTOR3 vOrigin, D3DXVECTOR3 vDir, D3DXVECTOR3 vDest)
+//{
+//    D3DXVECTOR3 vDist = vDest - vOrigin;
+//    float fPickDist = D3DXVec3Length(&vDist);
+//    bool isCol = false;
+//
+//    for (int i = 0; i < m_vecVertex.size(); i += 3)
+//    {
+//        float fDist;
+//        if (D3DXIntersectTri(&m_vecVertex[i + 0], &m_vecVertex[i + 1], &m_vecVertex[i + 2], &vOrigin, &vDir,
+//            NULL, NULL, &fDist))
+//        {
+//            // 레이체크 범위 안에 장애물이 있으면
+//            if (fDist < fPickDist)
+//            {
+//                isCol = true;
+//                break;
+//            }
+//        }
+//    }
+//
+//    return isCol;
+//}
+//
+//// 큐브와 구 충돌 -> 구가 정육면체 인것처럼 처리하고 있음...
+//bool cCube::CollisionSphere(D3DXVECTOR3 vCenter, float vRadius)
+//{
+//    bool isCol = false;
+//
+//    // 충돌 했으면
+//    if (m_vCenter.x - m_fRadiusX < vCenter.x + vRadius && m_vCenter.x + m_fRadiusX > vCenter.x - vRadius
+//    	&& m_vCenter.y - m_fRadiusY < vCenter.y + vRadius && m_vCenter.y + m_fRadiusY > vCenter.y - vRadius
+//    	&& m_vCenter.z - m_fRadiusZ < vCenter.z + vRadius && m_vCenter.z + m_fRadiusZ > vCenter.z - vRadius)
+//        isCol = true;
+//    
+//    return isCol;
+//}
+
+// 큐브와 포지션의 충돌 여부
+bool cCube::CollisionPos(D3DXVECTOR3 vPos)
+{
+    bool isCol = false;
+
+    // 충돌 했으면
+    if (m_vCenter.x - m_fRadiusX < vPos.x && m_vCenter.x + m_fRadiusX > vPos.x
+    	&& m_vCenter.y - m_fRadiusY < vPos.y && m_vCenter.y + m_fRadiusY > vPos.y
+    	&& m_vCenter.z - m_fRadiusZ < vPos.z && m_vCenter.z + m_fRadiusZ > vPos.z)
+        isCol = true;
+    
+    return isCol;
+}

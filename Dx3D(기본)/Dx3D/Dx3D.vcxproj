@@ -148,7 +148,7 @@
     <ClInclude Include="Asciitok.h" />
     <ClInclude Include="cAseCharacter.h" />
     <ClInclude Include="cAseLoader.h" />
-    <ClInclude Include="cAster.h" />
+    <ClInclude Include="cAstar.h" />
     <ClInclude Include="cAutoReleasePool.h" />
     <ClInclude Include="cCamera.h" />
     <ClInclude Include="cCharacterController.h" />
@@ -170,6 +170,7 @@
     <ClInclude Include="cObjLoader.h" />
     <ClInclude Include="cObjMap.h" />
     <ClInclude Include="cPicking.h" />
+    <ClInclude Include="cPillar.h" />
     <ClInclude Include="cPyramid.h" />
     <ClInclude Include="cRay.h" />
     <ClInclude Include="cSoundManager.h" />
@@ -182,11 +183,12 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="iObstacle.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cAseCharacter.cpp" />
     <ClCompile Include="cAseLoader.cpp" />
-    <ClCompile Include="cAster.cpp" />
+    <ClCompile Include="cAstar.cpp" />
     <ClCompile Include="cAutoReleasePool.cpp" />
     <ClCompile Include="cCamera.cpp" />
     <ClCompile Include="cCharacterController.cpp" />
@@ -208,6 +210,7 @@
     <ClCompile Include="cObjLoader.cpp" />
     <ClCompile Include="cObjMap.cpp" />
     <ClCompile Include="cPicking.cpp" />
+    <ClCompile Include="cPillar.cpp" />
     <ClCompile Include="cPyramid.cpp" />
     <ClCompile Include="cRay.cpp" />
     <ClCompile Include="cSoundManager.cpp" />

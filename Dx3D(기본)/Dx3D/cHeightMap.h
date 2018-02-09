@@ -2,12 +2,28 @@
 #include "cObject.h"
 #include "iMap.h"
 
+#define VERTEX_CNT          257
+#define TILE_CNT            (VERTEX_CNT - 1)
+#define PART_CNT            4
+#define PART_VERTEX_CNT     (TILE_CNT / PART_CNT)
+
 class cMtlTex;
+
+// ÆÄÆ® ³ª´©±â
+struct tagPart {
+    vector<D3DXVECTOR3>     vecVertex;      // ÆÄÆ® »ï°¢Çü ¹öÅØ½º(2°³)
+    int                     nMinIndexZ;     // ¸Ê ÁÂÇ¥ ÀÎµ¦½º(minz)
+    int                     nMinIndexX;     // ¸Ê ÁÂÇ¥ ÀÎµ¦½º(minx)
+    int                     nMaxIndexZ;     // ¸Ê ÁÂÇ¥ ÀÎµ¦½º(maxz)
+    int                     nMaxIndexX;     // ¸Ê ÁÂÇ¥ ÀÎµ¦½º(maxx)
+};
 
 class cHeightMap : public cObject, public iMap
 {
-    SYNTHESIZE_PASS_BY_REF(vector<D3DXVECTOR3>, m_vecVertex, Vertex);
+private:
+    vector<D3DXVECTOR3>     m_vecVertex;
 
+    vector<tagPart>         m_vecStPart;
 private:
 	LPD3DXMESH				m_pMesh;
 	cMtlTex*				m_pMtlTex;
@@ -22,6 +38,7 @@ public:
 	virtual void Load(IN char* szFilePath, IN D3DXMATRIXA16* pMat) override;
 	virtual bool GetHeight(IN const float& x, OUT float& y, IN const float& z) override;
     virtual bool ColisionRay(IN D3DXVECTOR3* vOrigin, IN D3DXVECTOR3* vDir, OUT D3DXVECTOR3& vPos) override;
+    virtual vector<D3DXVECTOR3> GetVertex() override;
 	void Render();
 };
 

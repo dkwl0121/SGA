@@ -4,61 +4,30 @@
 #include "iMap.h"
 
 cPicking::cPicking()
-    //: m_pMeshSphere(NULL)
-    : m_vPickPos(0, 0, 0)
-    , m_isPick(false)
+    : m_isPick(false)
 {
+    m_pRay = new cRay;
+    g_pAutoReleasePool->AddObject(m_pRay);
 }
 
 cPicking::~cPicking()
 {
-    //SAFE_RELEASE(m_pMeshSphere);
 }
 
-void cPicking::Setup()
-{
-
-    // 구 만들기                // 반지름, 삼각형(페이스) 개수
-    //D3DXCreateSphere(g_pD3DDevice, 0.5f, 10, 10, &m_pMeshSphere, NULL);
-}
-
-void cPicking::Update(iMap* pMap/*=NULL*/)
+void cPicking::Update()
 {
     if (g_pKeyManager->isOnceKeyDown(VK_LBUTTON))
     {
-        cRay Ray;
         // 뷰 스페이스 좌표로 변환
-        Ray.CalcPickingRay(g_ptMouse.x, g_ptMouse.y);
+        m_pRay->CalcPickingRay(g_ptMouse.x, g_ptMouse.y);
         // 월드 스페이스 좌표로 변환
         D3DXMATRIXA16 matView;
         g_pD3DDevice->GetTransform(D3DTS_VIEW, &matView);
         D3DXMatrixInverse(&matView, NULL, &matView);
-        Ray.TransformRay(&matView);
-
-        // 충돌 체크 지형이 있다면
-        if (pMap)
-        {
-            // 지형과 충돌 했다면 true / 아니면 false -> PickPos에 좌표값 넘겨줌.
-            m_isPick = pMap->ColisionRay(&Ray.GetOrigin(), &Ray.GetDirection(), m_vPickPos);
-        }
+        m_pRay->TransformRay(&matView);
+        m_isPick = true;
     }
 }
-
-//void cPicking::Render()
-//{
-//    D3DXMATRIXA16 mat;
-//    D3DXMatrixTranslation(&mat, m_vPickPos.x, m_vPickPos.y, m_vPickPos.z);
-//
-//    // 픽킹 했으면
-//    if (m_isPick)
-//    {
-//        g_pD3DDevice->SetTransform(D3DTS_WORLD, &mat);
-//        g_pD3DDevice->SetTexture(0, NULL);
-//        g_pD3DDevice->SetMaterial(&YELLOW_MTRL);
-//        m_pMeshSphere->DrawSubset(0);
-//    }
-//}
-
 
 /*
 반직선 구조체 또는 클래스 생성

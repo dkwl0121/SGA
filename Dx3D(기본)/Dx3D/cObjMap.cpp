@@ -79,3 +79,8 @@ bool cObjMap::ColisionRay(IN D3DXVECTOR3* vOrigin, IN D3DXVECTOR3* vDir, OUT D3D
 {
     return false;
 }
+
+vector<D3DXVECTOR3> cObjMap::GetVertex()
+{
+    return m_vecVertex;
+}

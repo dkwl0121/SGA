@@ -144,8 +144,14 @@
     <ClInclude Include="cNode.h">
       <Filter>클래스 파일\1. 기본 클래스</Filter>
     </ClInclude>
-    <ClInclude Include="cAster.h">
+    <ClInclude Include="cPillar.h">
       <Filter>클래스 파일\5. 맵 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="cAstar.h">
+      <Filter>클래스 파일\5. 맵 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="iObstacle.h">
+      <Filter>클래스 파일\1. 기본 클래스</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -242,7 +248,10 @@
     <ClCompile Include="cNode.cpp">
       <Filter>클래스 파일\1. 기본 클래스</Filter>
     </ClCompile>
-    <ClCompile Include="cAster.cpp">
+    <ClCompile Include="cPillar.cpp">
+      <Filter>클래스 파일\5. 맵 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="cAstar.cpp">
       <Filter>클래스 파일\5. 맵 클래스</Filter>
     </ClCompile>
   </ItemGroup>

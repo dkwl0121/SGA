@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "cCharacterController.h"
 #include "iMap.h"
+#include "cRay.h"
+#include "cAstar.h"
+#include "iObstacle.h"
 
 cCharacterController::cCharacterController()
 	: m_vPosition(0, 0, 0)
@@ -12,6 +15,8 @@ cCharacterController::cCharacterController()
 	, m_vDirection(0, 0, 1)
 	, m_nJumpCnt(0)
 	, m_fCurrGravity(0.0f)
+    , m_piMap(NULL)
+    , m_pAStar(NULL)
 {
 	D3DXMatrixIdentity(&m_matWorld);
 }
@@ -21,7 +26,16 @@ cCharacterController::~cCharacterController()
 {
 }
 
-void cCharacterController::Update(bool IsControl, iMap * pMap)
+void cCharacterController::Setup(iMap* pMap)
+{
+    m_piMap = pMap;
+
+    m_pAStar = new cAstar;
+    g_pAutoReleasePool->AddObject(m_pAStar);
+    m_pAStar->Setup(m_piMap->GetVertex());
+}
+
+void cCharacterController::Update(bool IsControl)
 {
     m_isMoving = IsControl; // 컨트롤이 불가능하면 무브 펄스!
     D3DXVECTOR3 vMovePos(m_vPosition);
@@ -76,7 +90,7 @@ void cCharacterController::Update(bool IsControl, iMap * pMap)
         m_vPosition.y = m_vPosition.y + JUMP_POWER - m_fCurrGravity;
 
         // 지형체크를 하지 않아도 되고, 착지 했을 경우
-        if (m_vPosition.y <= 0.0f && pMap == NULL)
+        if (m_vPosition.y <= 0.0f && m_piMap == NULL)
         {
             m_vPosition.y = 0.0f;
             m_fCurrGravity = 0.0f;
@@ -85,12 +99,12 @@ void cCharacterController::Update(bool IsControl, iMap * pMap)
     }
     
     // 지형물 충돌 체크
-    if (pMap != NULL)
+    if (m_piMap != NULL)
     {
         // 지형 충돌로 인한 이동 여부
         bool rayMove = false;
 
-        if (pMap->GetHeight(vMovePos.x, vMovePos.y, vMovePos.z))
+        if (m_piMap->GetHeight(vMovePos.x, vMovePos.y, vMovePos.z))
         {
             // 점프중이면
             if (m_nJumpCnt > 0)
@@ -117,7 +131,7 @@ void cCharacterController::Update(bool IsControl, iMap * pMap)
         // 점프 중에 땅을 파고 들어갔을 때 처리
         if (m_nJumpCnt > 0 && m_isMoving && !rayMove)
         {
-            if (pMap->GetHeight(m_vPosition.x, vMovePos.y, m_vPosition.z)   // x, y, z 이동 전 좌표기준으로 
+            if (m_piMap->GetHeight(m_vPosition.x, vMovePos.y, m_vPosition.z)   // x, y, z 이동 전 좌표기준으로 
                 && m_vPosition.y < vMovePos.y)                              // 땅을 파고 들어갔다면 점프 끝
             {
                 m_fCurrGravity = 0.0f;
@@ -133,7 +147,15 @@ void cCharacterController::Update(bool IsControl, iMap * pMap)
     }
 
     // == 픽킹 목적지로 이동 ==============================
-    // 도착지점이 설정 되었고, 현재 위치가 도착지점과 같지 않다면
+    // 도착지점이 설정되어 있지 않고, 남은 경로가 있다면
+    if (!m_isSetDest && !m_vecPath.empty())
+    {
+        m_vDestPos = m_vecPath.back();
+        m_vecPath.pop_back();
+        m_isSetDest = true;
+    }
+    
+    // 도착지점이 설정 되었으면 고, 현재 위치가 도착지점과 같지 않다면
     if (m_isSetDest
         && (fabsf(m_vPosition.x - m_vDestPos.x) > D3DX_16F_EPSILON
         || fabsf(m_vPosition.y - m_vDestPos.y) > D3DX_16F_EPSILON
@@ -164,7 +186,9 @@ void cCharacterController::Update(bool IsControl, iMap * pMap)
 
         D3DXMatrixRotationY(&matRY, m_fRotY);
 
-        if (m_vPosition == m_vDestPos)
+        if ((fabsf(m_vPosition.x - m_vDestPos.x) < D3DX_16F_EPSILON
+            && fabsf(m_vPosition.y - m_vDestPos.y) < D3DX_16F_EPSILON
+            && fabsf(m_vPosition.z - m_vDestPos.z) < D3DX_16F_EPSILON))
             m_isSetDest = false;
     }
 
@@ -172,4 +196,69 @@ void cCharacterController::Update(bool IsControl, iMap * pMap)
     D3DXMatrixTranslation(&matT, m_vPosition.x, m_vPosition.y, m_vPosition.z);
 
     m_matWorld = matRY * matT;
+}
+
+void cCharacterController::Render()
+{
+    if (m_pAStar)
+        m_pAStar->Render();
+}
+
+void cCharacterController::SetPick(cRay* Ray, iObstacle* piObstacle/*= NULL*/)
+{
+    if (!m_piMap) return;
+
+    // 레이가 지형과 충돌 했다면 true / 아니면 false -> PickPos에 좌표값 넘겨줌.
+    D3DXVECTOR3 vPickPos;
+    if (m_piMap->ColisionRay(&Ray->GetOrigin(), &Ray->GetDirection(), vPickPos))
+    {
+        // 픽킹 지점이 장애물이 있는 위치라면 리턴
+        if (piObstacle->IsinObstacle(vPickPos))
+            return;
+
+        // 픽킹을 했으면 설정된 도착지점, 경로 초기화
+        m_vDestPos = m_vPosition;
+        m_vecPath.clear();
+
+        // 가는 길에 장애물이 있으면
+        if (piObstacle && CheckFrontRay(piObstacle->GetVertex(), vPickPos))
+        {
+            m_vecPath = m_pAStar->FindPath(m_vPosition, vPickPos, &piObstacle->GetVertex());
+        }
+        // 가는 길에 장애물이 없으면
+        else
+        {
+            m_pAStar->Reset();
+            m_vDestPos = vPickPos;
+            m_isSetDest = true;
+        }
+    }
+}
+
+bool cCharacterController::CheckFrontRay(vector<D3DXVECTOR3> vecVertex, D3DXVECTOR3 vDest)
+{
+    bool isCol = false;
+    D3DXVECTOR3 vOrigin(m_vPosition.x, m_vPosition.y + 5.0f, m_vPosition.z);
+    D3DXVECTOR3 vDir = vDest - vOrigin; // 픽킹된 지역으로의 방향
+    D3DXVec3Normalize(&vDir, &vDir);
+
+    D3DXVECTOR3 vDist = vDest - vOrigin;
+    float fPickDist = D3DXVec3Length(&vDist);
+
+    for (int i = 0; i < vecVertex.size(); i += 3)
+    {
+        float fDist;
+        if (D3DXIntersectTri(&vecVertex[i + 0], &vecVertex[i + 1], &vecVertex[i + 2], &vOrigin, &vDir,
+            NULL, NULL, &fDist))
+        {
+            // 레이체크 범위 안에 장애물이 있으면
+            if (fDist < fPickDist)
+            {
+                isCol = true;
+                break;
+            }
+        }
+    }
+
+    return isCol;
 }

@@ -2,14 +2,14 @@
 
 #include "cObject.h"
 
-#define BLANK_DISTANCE 1.0f
-
 class cCube : public cObject
 {
 private:
 	D3DXMATRIXA16			m_matWorld;
 	LPDIRECT3DTEXTURE9		m_pTexture;
 	D3DMATERIAL9			m_stMaterial;
+
+    vector<D3DXVECTOR3>		m_vecVertex;
 
 	vector<cCube*>			m_vecChild;
 
@@ -22,6 +22,10 @@ private:
 	float					m_fRotXSpeed;
 	float					m_fRotY;
 	float					m_fRotYSpeed;
+
+    float                   m_fRadiusX;
+    float                   m_fRadiusY;
+    float                   m_fRadiusZ;
 
 	bool					m_isMoving;
 	D3DXVECTOR3				m_vCenter;		// 월드 공간에서의 포지션 정보
@@ -49,9 +53,12 @@ public:
 
 	// 겟터
 	D3DXVECTOR3 GetPosition() { return m_vCenter; }
+    vector<D3DXVECTOR3> GetVertex() { return m_vecVertex; }
 
 	// 충돌 처리
-	bool Collision(D3DXVECTOR3& center);
-
+	//bool Collision(D3DXVECTOR3& center);
+    //bool CollisionRay(D3DXVECTOR3 vOrigin, D3DXVECTOR3 vDir, D3DXVECTOR3 vDest);
+    //bool CollisionSphere(D3DXVECTOR3 vCenter, float vRadius);
+    bool CollisionPos(D3DXVECTOR3 vPos);
 };
 

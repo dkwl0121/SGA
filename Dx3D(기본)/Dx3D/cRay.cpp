@@ -43,7 +43,7 @@ void cRay::TransformRay(D3DXMATRIXA16 * T)
 }
 
 // 광선이 구체를 교차할 경우
-bool cRay::IntersectSphere(Sphere sphere)
+bool cRay::IntersectSphere(tagSphere sphere)
 {
     // 레이 오리진 -> 구의 중점을 (0, 0, 0)으로 옮기는 만큼 레이의 오리진도 이동
     D3DXVECTOR3 vQ = m_vOrigin - sphere.vPos;

@@ -2,26 +2,22 @@
 #include "cMainGame.h"
 #include "cCamera.h"
 #include "cCharacterController.h"
-#include "cObjMap.h"
-#include "cObjLoader.h"
 #include "cMtlTex.h"
 #include "cAseCharacter.h"
 #include "cHeightMap.h"
 #include "cGrid.h"
 #include "cPicking.h"
-#include "cAster.h"
+#include "cPillar.h"
 
 cMainGame::cMainGame()
 	: m_pCamera(NULL)
 	, m_pController(NULL)
-    , m_pObjMap(NULL)
 	, m_IsTarget(true)
     , m_pMeshMap(NULL)
     , m_pAseCharacter(NULL)
     , m_pHeightMap(NULL)
     , m_pGrid(NULL)
     , m_pPicking(NULL)
-    , m_pAster(NULL)
 {
 }
 
@@ -66,12 +62,20 @@ void cMainGame::Setup()
     g_pAutoReleasePool->AddObject(m_pGrid);
     m_pGrid->Setup();
 
+    // == 하이트맵 ==
+    m_pHeightMap = new cHeightMap;
+    g_pAutoReleasePool->AddObject(m_pHeightMap);
+    D3DXMATRIXA16 matW;
+    D3DXMatrixScaling(&matW, 1.0f, 1.0f, 1.0f);
+    m_pHeightMap->Load("HeightMapData/HeightMap.raw", &matW);
+
 	m_pCamera = new cCamera;
     g_pAutoReleasePool->AddObject(m_pCamera);
 	m_pCamera->Setup();
 
 	m_pController = new cCharacterController;
     g_pAutoReleasePool->AddObject(m_pController);
+    m_pController->Setup(m_pHeightMap);
 
     m_pAseCharacter = new cAseCharacter;
     g_pAutoReleasePool->AddObject(m_pAseCharacter);
@@ -93,23 +97,15 @@ void cMainGame::Setup()
     //m_pObjMap = new cObjMap;
     //g_pAutoReleasePool->AddObject(m_pObjMap);
     //m_pObjMap->Load("obj/map_surface.obj", &mat);
-
-    // == 하이트맵 ==
-    m_pHeightMap = new cHeightMap;
-    g_pAutoReleasePool->AddObject(m_pHeightMap);
-    D3DXMATRIXA16 matW;
-    D3DXMatrixScaling(&matW, 1.0f, 1.0f, 1.0f);
-    m_pHeightMap->Load("HeightMapData/HeightMap.raw", &matW);
-
+        
     // 픽킹
     m_pPicking = new cPicking;
     g_pAutoReleasePool->AddObject(m_pPicking);
-    m_pPicking->Setup();
 
-    // 에이스타
-    m_pAster = new cAster;
-    g_pAutoReleasePool->AddObject(m_pAster);
-    m_pAster->Setup(m_pHeightMap->GetVertex());
+    // 기둥(장애물)
+    m_pPillar = new cPillar;
+    g_pAutoReleasePool->AddObject(m_pPillar);
+    m_pPillar->Setup();
 }
 
 void cMainGame::Update()
@@ -119,25 +115,17 @@ void cMainGame::Update()
 	m_IsTarget = g_pKeyManager->isToggleKey(VK_TAB);
 
     if (m_pPicking)
-        m_pPicking->Update(m_pHeightMap);
+        m_pPicking->Update();
 
     // 픽킹을 했으면
     if (m_pPicking->GetIsPick())
     {
         m_pPicking->SetIsPick(false);
-        m_pAster->FindPath(*m_pController->GetPosition(), m_pPicking->GetPickPos()); // 시작점, 도착점 넣기
-        m_pController->SetDestPos(*m_pController->GetPosition()); // 픽킹을 했으면 설정된 도착지점 초기화 하기
-    }
-
-    vector<D3DXVECTOR3>& path = m_pAster->GetPath();
-    if (!path.empty() && !m_pController->GetIsMoving())
-    {
-        m_pController->SetDestPos(path.back());
-        path.pop_back();
+        m_pController->SetPick(m_pPicking->GetRay(), m_pPillar);
     }
 
     if (m_pController)
-        m_pController->Update(m_IsTarget, m_pHeightMap);
+        m_pController->Update(m_IsTarget);
 
     if (m_pAseCharacter)
         m_pAseCharacter->Update(m_pController->GetWorldTM());
@@ -192,8 +180,11 @@ void cMainGame::Render()
 
     g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, true);
 
-    if (m_pAster)
-        m_pAster->Render();
+    if (m_pPillar)
+        m_pPillar->Render();
+
+    if (m_pController)
+        m_pController->Render(); // AStar렌더됨
 
     RECT rt = { 10, 10, 200, 200 };
     g_pDrawTextManager->DrawTextOut("Git D3DX Base", rt, WHITE, "도담9");

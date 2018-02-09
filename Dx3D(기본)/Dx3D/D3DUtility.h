@@ -25,7 +25,7 @@ namespace D3DUTILITY
 	D3DLIGHT9 InitPoint(D3DXVECTOR3* pos, D3DXCOLOR* c);
 	D3DLIGHT9 InitSpot(D3DXVECTOR3* dir, D3DXVECTOR3* pos, D3DXCOLOR* c);
 
-    struct Sphere
+    struct tagSphere
     {
         D3DXVECTOR3         vPos;
         float               fRadius;
