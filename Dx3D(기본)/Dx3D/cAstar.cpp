@@ -103,6 +103,10 @@ vector<D3DXVECTOR3> cAstar::FindPath(D3DXVECTOR3 vFrom, D3DXVECTOR3 vTo, vector<
     // 시작, 도착 노드 찾기
     int nFromIndex = FindNodeIndex(vFrom);
     int nToIndex = FindNodeIndex(vTo);
+    
+    // 시작, 도착 노드를 찾지 못했다면 경로 없음
+    if (nFromIndex == -1 || nToIndex == -1)
+        return vector<D3DXVECTOR3>();
 
     m_vecpNode[nFromIndex]->m_pVia = m_vecpNode[nFromIndex];
     m_vecpNode[nFromIndex]->G = 0.0f;
@@ -112,10 +116,14 @@ vector<D3DXVECTOR3> cAstar::FindPath(D3DXVECTOR3 vFrom, D3DXVECTOR3 vTo, vector<
 
     do
     {
-       // 노드 갱신
-       Extend(currNode, m_vecpNode[nToIndex]);
+        // 노드 갱신
+        Extend(currNode, m_vecpNode[nToIndex]);
 
-        // F값이 가장 짧은 노드부터 검사
+        // 여기서 오픈 노드가 없을 경우 경로는 없음
+
+        if (m_mapMinFNode.empty()) return vector<D3DXVECTOR3>();
+
+        // F값이 가장 짧은 오픈 노드부터 검사
         currNode = m_mapMinFNode.begin()->second;
 
     } while (m_vecpNode[nToIndex]->S != E_CLOSE); // 도착지가 클로우즈 됐으면 그만
@@ -174,7 +182,7 @@ bool cAstar::IsBlocked(D3DXVECTOR3 vFrom, D3DXVECTOR3 vTo)
 int cAstar::FindNodeIndex(D3DXVECTOR3 vPos)
 {
     float fMinDist = D3DX_16F_MAX;
-    int nIndex = 0;
+    int nIndex = -1;
     for (int i = 0; i < m_vecpNode.size(); ++i)
     {
         // 장애물로 가려져 있는 노드면 패스
@@ -281,7 +289,7 @@ vector<D3DXVECTOR3> cAstar::SetPath(cNode* destNode, D3DXVECTOR3 vStartPos, D3DX
     return vecPath;
 }
 
-// 최적화
+// 최적화 (경로 컷팅)
 void cAstar::OptimizationPath(int nFirst, int nLast, OUT vector<D3DXVECTOR3>& vecPath)
 {
     if (nFirst >= nLast) return;

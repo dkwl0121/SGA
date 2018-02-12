@@ -65,7 +65,7 @@ void cHeightMap::Load(IN char* szFilePath, IN D3DXMATRIXA16* pMat)
 
     fclose(pFile);
 
-    // == 파트 셋팅 ==
+    // == (픽킹용) 파트 셋팅 ==
     for (int z = 0; z < PART_CNT; ++z)
     {
         for (int x = 0; x < PART_CNT; ++x)
@@ -75,6 +75,7 @@ void cHeightMap::Load(IN char* szFilePath, IN D3DXMATRIXA16* pMat)
             stPart.nMaxIndexZ = (z + 1) * PART_VERTEX_CNT;
             stPart.nMinIndexX = x * PART_VERTEX_CNT;
             stPart.nMaxIndexX = (x + 1) * PART_VERTEX_CNT;
+
             stPart.vecVertex.push_back(m_vecVertex[stPart.nMinIndexZ * VERTEX_CNT + stPart.nMinIndexX]);
             stPart.vecVertex.push_back(m_vecVertex[stPart.nMaxIndexZ * VERTEX_CNT + stPart.nMinIndexX]);
             stPart.vecVertex.push_back(m_vecVertex[stPart.nMinIndexZ * VERTEX_CNT + stPart.nMaxIndexX]);

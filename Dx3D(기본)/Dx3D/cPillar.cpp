@@ -15,7 +15,7 @@ void cPillar::Setup()
     cCube* pCube;
     D3DXMATRIXA16 matS, matT, matST;
     D3DXMatrixScaling(&matS, 10.0f, 40.0f, 10.0f);
-    for (int i = 0; i < 20; ++i)
+    for (int i = 0; i < 30; ++i)
     {
         pCube = new cCube;
         g_pAutoReleasePool->AddObject(pCube);

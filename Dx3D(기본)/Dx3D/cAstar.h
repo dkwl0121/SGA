@@ -22,7 +22,7 @@ private:
     float	            GetManhattanDistance(cNode* n1, cNode* n2);	                                // H값 계산 함수
     void	            Extend(cNode* currNode, cNode* destNode);			                        // 노드 갱신(확장) 함수
     vector<D3DXVECTOR3>	SetPath(cNode* destNode, D3DXVECTOR3 vStartPos, D3DXVECTOR3 vPickPos);	    // 최종 경로 설정 함수
-    void                OptimizationPath(int nFirst, int nLast, OUT vector<D3DXVECTOR3>& vecPath);  // 최적화
+    void                OptimizationPath(int nFirst, int nLast, OUT vector<D3DXVECTOR3>& vecPath);  // 최적화 (경로 컷팅)
 
 public:
     cAstar();
