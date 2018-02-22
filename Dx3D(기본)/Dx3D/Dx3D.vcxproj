@@ -146,6 +146,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Asciitok.h" />
+    <ClInclude Include="cAllocateHierarchy.h" />
     <ClInclude Include="cAseCharacter.h" />
     <ClInclude Include="cAseLoader.h" />
     <ClInclude Include="cAstar.h" />
@@ -155,7 +156,7 @@
     <ClInclude Include="cCube.h" />
     <ClInclude Include="cCubeMan.h" />
     <ClInclude Include="cDeviceManager.h" />
-    <ClInclude Include="cDrawTextManager.h" />
+    <ClInclude Include="cFontManager.h" />
     <ClInclude Include="cFrame.h" />
     <ClInclude Include="cGrid.h" />
     <ClInclude Include="cGroup.h" />
@@ -173,9 +174,16 @@
     <ClInclude Include="cPillar.h" />
     <ClInclude Include="cPyramid.h" />
     <ClInclude Include="cRay.h" />
+    <ClInclude Include="cSkinnedMesh.h" />
     <ClInclude Include="cSoundManager.h" />
     <ClInclude Include="cTextureManager.h" />
     <ClInclude Include="cTimeManager.h" />
+    <ClInclude Include="cUIButton.h" />
+    <ClInclude Include="cUIDraw.h" />
+    <ClInclude Include="cUIImageView.h" />
+    <ClInclude Include="cUIController.h" />
+    <ClInclude Include="cUIObject.h" />
+    <ClInclude Include="cUITextView.h" />
     <ClInclude Include="D3DUtility.h" />
     <ClInclude Include="Dx3D.h" />
     <ClInclude Include="iMap.h" />
@@ -186,6 +194,7 @@
     <ClInclude Include="iObstacle.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cAllocateHierarchy.cpp" />
     <ClCompile Include="cAseCharacter.cpp" />
     <ClCompile Include="cAseLoader.cpp" />
     <ClCompile Include="cAstar.cpp" />
@@ -195,7 +204,7 @@
     <ClCompile Include="cCube.cpp" />
     <ClCompile Include="cCubeMan.cpp" />
     <ClCompile Include="cDeviceManager.cpp" />
-    <ClCompile Include="cDrawTextManager.cpp" />
+    <ClCompile Include="cFontManager.cpp" />
     <ClCompile Include="cFrame.cpp" />
     <ClCompile Include="cGrid.cpp" />
     <ClCompile Include="cGroup.cpp" />
@@ -213,9 +222,16 @@
     <ClCompile Include="cPillar.cpp" />
     <ClCompile Include="cPyramid.cpp" />
     <ClCompile Include="cRay.cpp" />
+    <ClCompile Include="cSkinnedMesh.cpp" />
     <ClCompile Include="cSoundManager.cpp" />
     <ClCompile Include="cTextureManager.cpp" />
     <ClCompile Include="cTimeManager.cpp" />
+    <ClCompile Include="cUIButton.cpp" />
+    <ClCompile Include="cUIDraw.cpp" />
+    <ClCompile Include="cUIImageView.cpp" />
+    <ClCompile Include="cUIController.cpp" />
+    <ClCompile Include="cUIObject.cpp" />
+    <ClCompile Include="cUITextView.cpp" />
     <ClCompile Include="D3DUtility.cpp" />
     <ClCompile Include="Dx3D.cpp" />
     <ClCompile Include="stdafx.cpp">

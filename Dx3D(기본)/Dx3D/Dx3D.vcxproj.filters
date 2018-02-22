@@ -34,6 +34,9 @@
     <Filter Include="유틸">
       <UniqueIdentifier>{fa5e25c1-e023-439c-b63a-5e70a2788f64}</UniqueIdentifier>
     </Filter>
+    <Filter Include="클래스 파일\6. UI">
+      <UniqueIdentifier>{053c2880-10fa-4a0a-84db-ba80e558268f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -68,9 +71,6 @@
     </ClInclude>
     <ClInclude Include="cTextureManager.h">
       <Filter>클래스 파일\2. 매니져</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Dx3D.h">
       <Filter>헤더 파일</Filter>
@@ -117,9 +117,6 @@
     <ClInclude Include="cAutoReleasePool.h">
       <Filter>클래스 파일\2. 매니져</Filter>
     </ClInclude>
-    <ClInclude Include="cDrawTextManager.h">
-      <Filter>클래스 파일\2. 매니져</Filter>
-    </ClInclude>
     <ClInclude Include="Asciitok.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -152,6 +149,36 @@
     </ClInclude>
     <ClInclude Include="iObstacle.h">
       <Filter>클래스 파일\1. 기본 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="cUIImageView.h">
+      <Filter>클래스 파일\6. UI</Filter>
+    </ClInclude>
+    <ClInclude Include="cUIObject.h">
+      <Filter>클래스 파일\6. UI</Filter>
+    </ClInclude>
+    <ClInclude Include="cUITextView.h">
+      <Filter>클래스 파일\6. UI</Filter>
+    </ClInclude>
+    <ClInclude Include="cUIDraw.h">
+      <Filter>클래스 파일\6. UI</Filter>
+    </ClInclude>
+    <ClInclude Include="cFontManager.h">
+      <Filter>클래스 파일\2. 매니져</Filter>
+    </ClInclude>
+    <ClInclude Include="cUIButton.h">
+      <Filter>클래스 파일\6. UI</Filter>
+    </ClInclude>
+    <ClInclude Include="cUIController.h">
+      <Filter>클래스 파일\6. UI</Filter>
+    </ClInclude>
+    <ClInclude Include="cSkinnedMesh.h">
+      <Filter>클래스 파일\4. 캐릭터 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="cAllocateHierarchy.h">
+      <Filter>클래스 파일\4. 캐릭터 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -224,9 +251,6 @@
     <ClCompile Include="cAutoReleasePool.cpp">
       <Filter>클래스 파일\2. 매니져</Filter>
     </ClCompile>
-    <ClCompile Include="cDrawTextManager.cpp">
-      <Filter>클래스 파일\2. 매니져</Filter>
-    </ClCompile>
     <ClCompile Include="cAseLoader.cpp">
       <Filter>클래스 파일\4. 캐릭터 클래스</Filter>
     </ClCompile>
@@ -253,6 +277,33 @@
     </ClCompile>
     <ClCompile Include="cAstar.cpp">
       <Filter>클래스 파일\5. 맵 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="cUIDraw.cpp">
+      <Filter>클래스 파일\6. UI</Filter>
+    </ClCompile>
+    <ClCompile Include="cUIImageView.cpp">
+      <Filter>클래스 파일\6. UI</Filter>
+    </ClCompile>
+    <ClCompile Include="cUIObject.cpp">
+      <Filter>클래스 파일\6. UI</Filter>
+    </ClCompile>
+    <ClCompile Include="cUITextView.cpp">
+      <Filter>클래스 파일\6. UI</Filter>
+    </ClCompile>
+    <ClCompile Include="cFontManager.cpp">
+      <Filter>클래스 파일\2. 매니져</Filter>
+    </ClCompile>
+    <ClCompile Include="cUIButton.cpp">
+      <Filter>클래스 파일\6. UI</Filter>
+    </ClCompile>
+    <ClCompile Include="cUIController.cpp">
+      <Filter>클래스 파일\6. UI</Filter>
+    </ClCompile>
+    <ClCompile Include="cSkinnedMesh.cpp">
+      <Filter>클래스 파일\4. 캐릭터 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="cAllocateHierarchy.cpp">
+      <Filter>클래스 파일\4. 캐릭터 클래스</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

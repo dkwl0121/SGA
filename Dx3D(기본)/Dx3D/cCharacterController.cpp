@@ -17,6 +17,8 @@ cCharacterController::cCharacterController()
 	, m_fCurrGravity(0.0f)
     , m_piMap(NULL)
     , m_pAStar(NULL)
+    , m_ePickStat(E_PICK_STAT_NONE)
+    , m_vPickPos(0, 0, 0)
 {
 	D3DXMatrixIdentity(&m_matWorld);
 }
@@ -148,7 +150,7 @@ void cCharacterController::Update(bool IsControl)
 
     // == 픽킹 목적지로 이동 ==============================
     // 도착지점이 설정되어 있지 않고, 남은 경로가 있다면
-    if (!m_isSetDest && !m_vecPath.empty())
+    if (m_ePickStat == E_PICK_STAT_NONE && !m_isSetDest && !m_vecPath.empty())
     {
         m_vDestPos = m_vecPath.back();
         m_vecPath.pop_back();
@@ -156,7 +158,8 @@ void cCharacterController::Update(bool IsControl)
     }
     
     // 도착지점이 설정 되었으면 고, 현재 위치가 도착지점과 같지 않다면
-    if (m_isSetDest
+    if (m_ePickStat == E_PICK_STAT_NONE
+        && m_isSetDest
         && (fabsf(m_vPosition.x - m_vDestPos.x) > D3DX_16F_EPSILON
         || fabsf(m_vPosition.y - m_vDestPos.y) > D3DX_16F_EPSILON
         || fabsf(m_vPosition.z - m_vDestPos.z) > D3DX_16F_EPSILON))
@@ -204,9 +207,9 @@ void cCharacterController::Render()
         m_pAStar->Render();
 }
 
-void cCharacterController::SetPick(cRay* Ray, iObstacle* piObstacle/*= NULL*/)
+bool cCharacterController::CheckPick(cRay* Ray, iObstacle* piObstacle/*= NULL*/)
 {
-    if (!m_piMap) return;
+    if (!m_piMap) return false;
 
     // 레이가 지형과 충돌 했다면 true / 아니면 false -> PickPos에 좌표값 넘겨줌.
     D3DXVECTOR3 vPickPos;
@@ -214,25 +217,33 @@ void cCharacterController::SetPick(cRay* Ray, iObstacle* piObstacle/*= NULL*/)
     {
         // 픽킹 지점이 장애물이 있는 위치라면 리턴
         if (piObstacle->IsinObstacle(vPickPos))
-            return;
+            return false;
+
+        // 픽킹 지점이 확정나면 대입
+        m_vPickPos = vPickPos;
 
         // 픽킹을 했으면 설정된 도착지점, 경로 초기화
         m_vDestPos = m_vPosition;
+        m_isSetDest = false;
         m_vecPath.clear();
 
         // 가는 길에 장애물이 있으면
-        if (piObstacle && CheckFrontRay(piObstacle->GetVertex(), vPickPos))
+        if (piObstacle && CheckFrontRay(piObstacle->GetVertex(), m_vPickPos))
         {
-            m_vecPath = m_pAStar->FindPath(m_vPosition, vPickPos, &piObstacle->GetVertex());
+            m_vecPath = m_pAStar->FindPath(m_vPosition, m_vPickPos, &piObstacle->GetVertex());
+            m_ePickStat = E_PICK_STAT_ASTAR;
         }
         // 가는 길에 장애물이 없으면
         else
         {
             m_pAStar->Reset();
-            m_vDestPos = vPickPos;
+            m_vDestPos = m_vPickPos;
             m_isSetDest = true;
+            m_ePickStat = E_PICK_STAT_NOASTAR;
         }
     }
+
+    return true;
 }
 
 bool cCharacterController::CheckFrontRay(vector<D3DXVECTOR3> vecVertex, D3DXVECTOR3 vDest)

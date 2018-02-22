@@ -8,12 +8,13 @@ class cTextureManager
 
 private:
 	map<string, LPDIRECT3DTEXTURE9> m_mapTexture;
+    map<string, D3DXIMAGE_INFO>		m_mapImageInfo;
 
 public:
 
 	void Destroy();
 
-	void AddTexture(string key, string fileName);
-	LPDIRECT3DTEXTURE9& GetTexture(string key);
+	void AddTexture(string key, string fileName, bool saveImageInfo = false);
+	LPDIRECT3DTEXTURE9& GetTexture(string key, OUT D3DXIMAGE_INFO* pImageInfo = NULL);
 };
 

@@ -8,6 +8,8 @@
 #include "cGrid.h"
 #include "cPicking.h"
 #include "cPillar.h"
+#include "cUIController.h"
+#include "cSkinnedMesh.h"
 
 cMainGame::cMainGame()
 	: m_pCamera(NULL)
@@ -18,6 +20,8 @@ cMainGame::cMainGame()
     , m_pHeightMap(NULL)
     , m_pGrid(NULL)
     , m_pPicking(NULL)
+    , m_pUIController(NULL)
+    , m_pSkinnedMesh(NULL)
 {
 }
 
@@ -27,7 +31,7 @@ cMainGame::~cMainGame()
 
     g_pLightManager->Destroy();
 	g_pTextureManager->Destroy();
-    g_pDrawTextManager->Destroy();
+    g_pFontManager->Destory();
 
     // 오브젝트 빼는 작업 부터 하기!!!
     g_pAutoReleasePool->Drain();
@@ -47,7 +51,6 @@ void cMainGame::Setup()
 	//i.close();
 	
     g_pKeyManager->Setup();
-    g_pDrawTextManager->Setup();
 
 	srand(time(NULL));
 	rand();
@@ -57,6 +60,9 @@ void cMainGame::Setup()
 	D3DXVec3Normalize(&dir, &dir);
 	D3DLIGHT9 stLight = InitDirectional(&dir, &WHITE);
 	g_pLightManager->AddLight("main", stLight);
+
+    // 조명에 따른 모든법선벡터들을 정리해주는 함수!! (모든 법선벡터를 노멀라이즈 해주는 함수!!!) 이렇게 해야 조명에 대한 출력이 잘 됨.
+    g_pD3DDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
 
     m_pGrid = new cGrid;
     g_pAutoReleasePool->AddObject(m_pGrid);
@@ -106,6 +112,15 @@ void cMainGame::Setup()
     m_pPillar = new cPillar;
     g_pAutoReleasePool->AddObject(m_pPillar);
     m_pPillar->Setup();
+
+    // UI
+    m_pUIController = new cUIController;
+    g_pAutoReleasePool->AddObject(m_pUIController);
+    m_pUIController->Setup();
+
+    m_pSkinnedMesh = new cSkinnedMesh;
+    g_pAutoReleasePool->AddObject(m_pSkinnedMesh);
+    m_pSkinnedMesh->Load("Zealot", "zealot.X");
 }
 
 void cMainGame::Update()
@@ -114,6 +129,9 @@ void cMainGame::Update()
 
 	m_IsTarget = g_pKeyManager->isToggleKey(VK_TAB);
 
+    if (m_pUIController)
+        m_pUIController->Update();
+
     if (m_pPicking)
         m_pPicking->Update();
 
@@ -121,8 +139,36 @@ void cMainGame::Update()
     if (m_pPicking->GetIsPick())
     {
         m_pPicking->SetIsPick(false);
-        m_pController->SetPick(m_pPicking->GetRay(), m_pPillar);
+        
+        // 이동 가능한 곳에 픽킹을 했다면
+        if (m_pController->CheckPick(m_pPicking->GetRay(), m_pPillar))
+        {
+            // 에이스타 방식으로 이동해야 한다면
+            if (m_pController->GetPickStat() == E_PICK_STAT_ASTAR)
+            {
+                m_pUIController->SetInfo(E_UI_KIND_LOADINFO, tagUIInfo(*m_pController->GetPosition(), m_pController->GetPickPos(), true));
+            }
+            // 다이렉트 방식으로 이동해야 한다면
+            else if (m_pController->GetPickStat() == E_PICK_STAT_NOASTAR)
+            {
+                m_pUIController->SetInfo(E_UI_KIND_LOADINFO, tagUIInfo(*m_pController->GetPosition(), m_pController->GetPickPos(), false));
+            }
+        }
     }
+
+    // 남은 길 노드 개수 얻기
+    if (m_pController->GetPickStat() == E_PICK_STAT_NONE)
+    {
+        m_pUIController->SetInfo(E_UI_KIND_LOADCNT, tagUIInfo(*m_pController->GetPosition(), m_pController->GetPathCnt()));
+    }
+    else
+    {
+        m_pUIController->SetInfo(E_UI_KIND_LOADCNT, tagUIInfo(*m_pController->GetPosition(), 0));
+    }
+
+    // "출발" UI를 클릭 했으면 캐릭터 이동 시작
+    if (m_pController->GetPickStat() != E_PICK_STAT_NONE && m_pUIController->GetIsClickStart())
+        m_pController->SetPickStat(E_PICK_STAT_NONE);
 
     if (m_pController)
         m_pController->Update(m_IsTarget);
@@ -143,6 +189,9 @@ void cMainGame::Update()
 			m_pCamera->Update();
 		}
 	}
+
+    if (m_pSkinnedMesh)
+        m_pSkinnedMesh->Update();
 }
 
 void cMainGame::Render()
@@ -151,6 +200,11 @@ void cMainGame::Render()
 		D3DCOLOR_XRGB(47, 121, 112), 1.0f, 0);
 
 	g_pD3DDevice->BeginScene();
+
+    //g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, false);
+
+    // 와이어 모드 출력
+    //g_pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
     g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, false);
 
@@ -169,16 +223,13 @@ void cMainGame::Render()
     //    m_pMeshMap->DrawSubset(i);
     //}
 
+    g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, true);
+
     if (m_pHeightMap)
         m_pHeightMap->Render();
 
     if (m_pAseCharacter)
         m_pAseCharacter->Render();
-
-    // 와이어 모드 출력
-    //g_pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-
-    g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, true);
 
     if (m_pPillar)
         m_pPillar->Render();
@@ -186,8 +237,11 @@ void cMainGame::Render()
     if (m_pController)
         m_pController->Render(); // AStar렌더됨
 
-    RECT rt = { 10, 10, 200, 200 };
-    g_pDrawTextManager->DrawTextOut("Git D3DX Base", rt, WHITE, "도담9");
+    if (m_pSkinnedMesh)
+        m_pSkinnedMesh->Render();
+
+    if (m_pUIController)
+        m_pUIController->Render();
 
 	g_pD3DDevice->EndScene();
 

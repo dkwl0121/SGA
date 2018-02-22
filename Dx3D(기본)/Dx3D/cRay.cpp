@@ -32,7 +32,7 @@ void cRay::CalcPickingRay(int x, int y) // 마우스 좌표
 }
 
 // 광선의 변환 (이 함수는 뷰 스페이스에서 월드 스페이스로 변환할 때 쓰임) ->T값이 뷰스페이스 메트릭스의 역행렬 일때
-void cRay::TransformRay(D3DXMATRIXA16 * T)
+void cRay::TransformRay(D3DXMATRIXA16* T)
 {
     // 광선의 원점을 변환
     D3DXVec3TransformCoord(&m_vOrigin, &m_vOrigin, T);
